@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <!-- EN-TÊTE DU MOIS -->
+    <div class="month-header">
+      <h2>Septembre 2026</h2>
+      <div class="month-nav">
+        <button>&lt;</button>
+        <button>&gt;</button>
+      </div>
+    </div>
+
+    <!-- GRILLE DU CALENDRIER -->
+    <div class="calendar-grid">
+      <div class="day-name">Lun</div><div class="day-name">Mar</div><div class="day-name">Mer</div>
+      <div class="day-name">Jeu</div><div class="day-name">Ven</div><div class="day-name">Sam</div><div class="day-name">Dim</div>
+
+      <!-- Jours précédents -->
+      <div class="day-cell other-month">31</div>
+
+      <!-- Jours du mois -->
+      <div class="day-cell">1</div>
+      <div class="day-cell">2</div>
+      <div class="day-cell has-event">
+        3
+        <span class="event-pill">Culte spécial</span>
+      </div>
+      <div class="day-cell">4</div>
+      <div class="day-cell">5</div>
+      <div class="day-cell">6</div>
+      <div class="day-cell">7</div>
+      <div class="day-cell">8</div>
+      <div class="day-cell">9</div>
+      <div class="day-cell has-event selected">
+        10
+        <span class="event-pill">Concert JA</span>
+      </div>
+      <div class="day-cell">11</div>
+      <div class="day-cell">12</div>
+      <div class="day-cell">13</div>
+      <div class="day-cell">14</div>
+      <div class="day-cell">15</div>
+      <div class="day-cell">16</div>
+      <div class="day-cell">17</div>
+      <div class="day-cell">18</div>
+      <div class="day-cell has-event">
+        19
+        <span class="event-pill">Jeûne & Prière</span>
+      </div>
+      <div class="day-cell">20</div>
+      <div class="day-cell">21</div>
+      <div class="day-cell">22</div>
+      <div class="day-cell">23</div>
+      <div class="day-cell">24</div>
+      <div class="day-cell">25</div>
+      <div class="day-cell">26</div>
+      <div class="day-cell">27</div>
+      <div class="day-cell">28</div>
+      <div class="day-cell">29</div>
+      <div class="day-cell">30</div>
+    </div>
+
+    <!-- DÉTAILS DE L'ÉVÉNEMENT DU JOUR SELECTIONNÉ -->
+    <div class="events-section">
+      <h3>Événements du 19 Septembre</h3>
+      
+      <div class="event-card">
+        <div class="time">Toute la journée</div>
+        <div class="title">Journée mondial des Éclaireurs</div>
+        <div class="location">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Sur tout le territoire de la conférence générale
+        </div>
+      </div>
+    </div>
+  {% endblock %}

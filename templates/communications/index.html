@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="page-intro">
+      <h1>Communications</h1>
+      <p>Communiqués officiels, classés par organisme émetteur</p>
+    </div>
+    
+    <div class="card-grid">
+      <a href="{{ url_for('communications.federation_news', federation='fedchas') }}" class="entity-card" style="background:#8E2A2E;">
+        <img class="seal-watermark" src="{{ url_for('static', filename='img/fedchas.png') }}" alt="Logo COJA7">
+        <div class="spine" ></div>
+        <div class="info">
+          <h3>FEDCHAS</h3>
+          <div class="count">{{ counts.get('fedchas', 0) }} note{{ 's' if counts.get('fedchas', 0) > 1 else '' }}</div>
+        </div>
+      </a>
+      <a href="{{ url_for('communications.federation_news', federation='mipah') }}" class="entity-card">
+        <img class="seal-watermark" src="{{ url_for('static', filename='img/mipah.png') }}" alt="Logo COJA7">
+        <div class="spine" style="background:#2C5F7C;"></div>
+        <div class="info">
+          <h3>MIPAH</h3>
+          <div class="count">{{ counts.get('mipah', 0) }} note{{ 's' if counts.get('mipah', 0) > 1 else '' }}</div>
+        </div>
+      </a>
+    </div>
+  {% endblock %}

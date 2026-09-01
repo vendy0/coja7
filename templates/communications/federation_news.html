@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="page-intro">
+      <h1>{{ page_title.upper() }}</h1>
+      <p>Communiqués officiels · Direction des Ministères de la Jeunesse</p>
+    </div>
+
+    <div class="seal-strip">
+      <img src="{{ url_for('static', filename='img/logo.jpg') }}" alt="Logo COJA7">
+    </div>
+
+    <div class="section-label">
+      <span class="title">Toutes les notes</span>
+    </div>
+
+    {% for note in notes %}
+    <a class="note-row{% if loop.first %} latest{% endif %}"
+       {% if loop.last %}style="border-bottom:none;"{% endif %}
+       href="{{ url_for('communications.federation_detail', note_id=note.id, federation=note.federation) }}">
+      <div class="top-line">
+        <span class="ref">{{ note.reference_number or "" }}</span>
+        <span class="date">{{ note.published_at | date_fr }}</span>
+      </div>
+      <h4>{{ note.title }}</h4>
+      <div class="dept">{{ note.department or "" }}{% if note.pdf_url %} <span class="pdf">PDF</span>{% endif %}</div>
+    </a>
+    {% else %}
+    <p>Aucune note publiée pour le moment.</p>
+    {% endfor %}
+
+    <a class="load-more">Charger plus</a>
+
+  {% endblock %}

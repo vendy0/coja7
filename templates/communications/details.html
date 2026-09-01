@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block device_body %}
+<!-- TOPBAR FIXE -->
+  <div class="topbar">
+    <div class="back-btn" onclick="history.back()">
+      <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
+    </div>
+    <div class="top-title">Communiqué Officiel</div>
+    <div class="share-btn">
+      <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+    </div>
+  </div>
+
+  <!-- ZONE DE DEFILEMENT -->
+  <div class="document-scroll">
+    <!-- Filigrane -->
+    <img src="{{ url_for('static', filename='img/logo.jpg') }}" alt="" class="watermark {{ 'media' if note.hero_media_url else 'no-media' }}">
+
+    <div class="article-content">
+      
+      <!-- ========================================== -->
+      <!-- DÉBUT DE LA ZONE MEDIA (HERO MEDIA)        -->
+      <!-- ========================================== -->
+      {% if note.hero_media_url %}
+      <div class="hero-media">
+        {% if note.hero_media_type == 'video' %}
+          <video class="hero_media_video" controls>
+            <source src="{{ note.hero_media_url }}" type="video/mp4">
+            Votre navigateur ne supporte pas la balise vidéo.
+          </video>
+        {% else %}
+          <img class="hero_media_image" src="{{ note.hero_media_url }}" alt="{{ 'note.hero_media_description' if note.hero_media_description else 'Illustration du communiqué' }}">
+        {% endif %}
+      </div>
+      {% endif %}
+      <!-- ========================================== -->
+      <!-- FIN DE LA ZONE MEDIA                       -->
+      <!-- ========================================== -->
+
+      <div class="meta-header">
+        <span class="ref">{{ note.reference_number or "" }}</span>
+        <span class="date">{{ note.published_at | date_fr }}</span>
+      </div>
+
+      <h1 class="article-title">{{ note.title }}</h1>
+
+      <div class="department-tag">{{ note.department or "" }}</div>
+
+      <div class="body-text">
+        {% for paragraphe in (note.content or "").split('\n\n') %}
+        <p>{{ paragraphe }}</p>
+        {% endfor %}
+      </div>
+
+      <div class="signature-block">
+        <div>{{ note.author or "" }}</div>
+        <div class="role">{{ note.department or "" }}</div>
+      </div>
+
+      {% if note.pdf_url %}
+      <a href="{{ note.pdf_url }}" class="pdf-download" target="_blank">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Télécharger la note (PDF)
+      </a>
+      {% endif %}
+
+    </div>
+  </div>
+{% endblock %}

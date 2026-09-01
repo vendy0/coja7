@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block device_body %}
+<div class="topbar">
+    <div class="back-btn" onclick="history.back()">
+      <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
+    </div>
+    <div class="top-title">Détails de l'émission</div>
+    <div class="share-btn">
+      <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+    </div>
+  </div>
+
+  <div class="document-scroll">
+    
+    <!-- ZONE MEDIA (HERO MEDIA) -->
+    {% if sermon.hero_media_url %}
+    <div class="hero-media">
+      {% if sermon.hero_media_type == 'video' %}
+        <video class="hero_media_video" controls>
+          <source src="{{ sermon.hero_media_url }}" type="video/mp4">
+          Votre navigateur ne supporte pas la balise vidéo.
+        </video>
+      {% else %}
+        <img class="hero_media_image" src="{{ sermon.hero_media_url }}" alt="Illustration du sermon">
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <img src="{{ url_for('static', filename='img/logo.jpg') }}" alt="" class="watermark {{ 'media' if sermon.hero_media_url else 'no-media' }}">
+
+    <div class="article-content">
+      
+      <div class="meta-header">
+        <span class="ref">{{ sermon.reference or "Culte" }}</span>
+        <span class="date">{{ sermon.published_at | date_fr }}</span>
+      </div>
+
+      <h1 class="article-title">{{ sermon.title }}</h1>
+      
+      {% if sermon.author %}
+      <div class="speaker-tag">
+        <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        {{ sermon.author }}
+      </div>
+      {% endif %}
+
+      <div class="body-text">
+        {% for paragraphe in (sermon.content or "").split('\n\n') %}
+        <p>{{ paragraphe }}</p>
+        {% endfor %}
+      </div>
+
+      {% if sermon.audio_url %}
+      <a href="{{ sermon.audio_url }}" class="audio-download" target="_blank">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Télécharger l'audio (MP3)
+      </a>
+      {% endif %}
+      
+      {% if sermon.pdf_url %}
+      <a href="{{ sermon.pdf_url }}" class="audio-download" style="margin-top: 10px;" target="_blank">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Télécharger le document (PDF)
+      </a>
+      {% endif %}
+
+    </div>
+  </div>
+{% endblock %}

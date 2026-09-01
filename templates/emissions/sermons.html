@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="page-intro">
+      <h1>Sermons</h1>
+      <p>Prédications</p>
+    </div>
+
+    <div class="seal-strip">
+      <img src="{{ url_for('static', filename='img/logo.jpg') }}" alt="Logo COJA7">
+    </div>
+
+    <div class="section-label">
+      <span class="title">Tous les épisodes</span>
+    </div>
+
+    {% for sermon in sermons %}
+    <a class="rubrique-row" {% if loop.last %}style="border-bottom:none;"{% endif %} href="{{ url_for('emissions.sermon_detail', sermon_id=sermon.id) }}">
+      <div class="top-line">
+        <span class="ep">{{ sermon.reference or "Sermon" }}</span>
+        <span class="date">{{ sermon.published_at | date_fr }}</span>
+      </div>
+      <h4>{{ sermon.title }}</h4>
+      <p>{{ sermon.subtitle or "" }}</p>
+    </a>
+    {% else %}
+    <p>Aucun sermon n'a été publié pour le moment.</p>
+    {% endfor %}
+
+    <a class="load-more">Charger plus</a>
+{% endblock %}

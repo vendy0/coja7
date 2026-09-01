@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COJA7 — {{ page_title }}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+{% block extra_head %}{% endblock %}
+</head>
+<body>
+{% block device_body %}
+  <header>
+    <div class="badge"><img src="{{ url_for('static', filename='img/logo.jpg') }}" alt="Logo COJA7"></div>
+    <div class="wordmark"><span class="name"><span class="name_coja">COJA</span><span class="name_seven">7</span></span></div>
+    {% block header_extra %}{% if active_page != 'accueil' %}<div class="back">{{ page_title }}</div>{% endif %}{% endblock %}
+  </header>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <nav>
+    <a href="{{ url_for('index') }}" class="{{ 'active' if active_page == 'accueil' }}">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M4 11L12 4l8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/></svg>
+      <span>Accueil</span>
+    </a>
+    <a href="{{ url_for('communications.index') }}" class="{{ 'active' if active_page == 'communications' }}">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><rect x="4" y="5" width="16" height="15" rx="0.5"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>
+      <span>Communications</span>
+    </a>
+    <a href="{{ url_for('emissions.index') }}" class="{{ 'active' if active_page == 'emissions' }}">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><circle cx="12" cy="9" r="3.4"/><path d="M8.2 21c0-3 1.7-5 3.8-5s3.8 2 3.8 5"/></svg>
+      <span>Émissions</span>
+    </a>
+    <a href="{{ url_for('medias.index') }}" class="{{ 'active' if active_page == 'medias' }}">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="1"/><circle cx="9" cy="11" r="2"/><path d="M21 16l-5-4-4 3-3-2-6 4"/></svg>
+      <span>Médias</span>
+    </a>
+    <a href="{{ url_for('calendar') }}" class="{{ 'active' if active_page == 'calendar' }}">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><rect x="4" y="5.5" width="16" height="14" rx="0.5"/><path d="M4 10h16M8 3.5v4M16 3.5v4"/></svg>
+      <span>Calendrier</span>
+    </a>
+  </nav>
+{% endblock %}
+</body>
+</html>

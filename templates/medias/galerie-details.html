@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block device_body %}
+<div class="scroll-area">
+
+    <div class="gallery-topbar">
+      <div class="back" onclick="history.back()">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7"/></svg>
+      </div>
+      <div class="titles">
+        <div class="eyebrow">{{ gallery.department or "" }} · {{ gallery.event_date | date_fr }}</div>
+        <h1>{{ gallery.title }}</h1>
+      </div>
+    </div>
+
+    <div class="masonry">
+
+      {% for item in gallery.media_items %}
+      <div class="tile" onclick="openLightbox({{ loop.index0 }})">
+        <img src="{{ item.thumbnails_url or item.media_url }}" alt="{{ item.credit or gallery.title }}" loading="lazy" />
+        
+        {% if item.type == 'video' %}
+        <div class="play-center">
+          <svg viewBox="0 0 12 12"><polygon points="0,0 12,6 0,12"/></svg>
+        </div>
+        {% endif %}
+
+        {% if item.credit %}
+        <div class="credit">{{ item.credit }}</div>
+        {% endif %}
+      </div>
+      {% else %}
+      <p>Aucun média n'a été ajouté à cette galerie.</p>
+      {% endfor %}
+
+    </div>
+
+    <div class="end-note">© COJA7 — Tous droits réservés. Reproduction soumise à autorisation.</div>
+
+</div>
+
+<!-- Fenêtre de visionnage (Lightbox) -->
+<div id="lightbox" class="lightbox" onclick="closeLightbox(event)">
+  <span class="lightbox-close" onclick="closeLightbox(event)">&times;</span>
+  
+  <button class="lightbox-nav prev" onclick="event.stopPropagation(); navigateLightbox(-1)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 19l-7-7 7-7"/></svg>
+  </button>
+
+  <div class="lightbox-content" onclick="event.stopPropagation()">
+    <!-- Spinner de chargement -->
+    <div id="lightbox-loader" class="lightbox-loader"></div>
+
+    <img id="lightbox-img" alt="" style="display: none;" onload="onMediaLoaded()" onerror="onMediaError()" />
+    <video id="lightbox-video" controls style="display: none;" onloadeddata="onMediaLoaded()" onerror="onMediaError()"></video>
+    <div id="lightbox-caption" class="lightbox-caption"></div>
+  </div>
+
+  <button class="lightbox-nav next" onclick="event.stopPropagation(); navigateLightbox(1)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5l7 7-7 7"/></svg>
+  </button>
+</div>
+<script>
+const galleryMedia = [
+  {% for item in gallery.media_items %}
+  {
+    type: {{ item.type | tojson }},
+    url: {{ item.media_url | tojson }},
+    credit: {{ (item.credit or gallery.title) | tojson }}
+  }{% if not loop.last %},{% endif %}
+  {% endfor %}
+];
+</script>
+
+<script src="{{ url_for('static', filename='js/gallery.js') }}"></script>
+
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <section class="featured">
+      <div class="eyebrow"><span class="dot"></span>Sermon · Culte du Sabbat</div>
+      <div class="frame">
+        <div class="play">
+          <svg viewBox="0 0 12 12" fill="#FFFFFF"><polygon points="0,0 12,6 0,12"/></svg>
+        </div>
+      </div>
+      <h1>Marcher dans la foi en temps d'incertitude</h1>
+      <p>Pasteur Jean Bernard Banathe — enregistré au Bureau de la FEDCHAS, 29 août 2026</p>
+    <ul>
+    {% for key, value in events[0].items()%}
+        <li>{{ key }}</li>
+    {% endfor %}
+    <hr>
+    {% for event in events %}
+        {{ event.youtube_id }}
+        <br>
+    {% endfor %}
+    </ul>
+    </section>
+
+    <div class="fedchas">
+      <img class="seal-watermark" src="{{ url_for('static', filename='img/logo.jpg') }}" alt="Logo COJA7">
+      <div class="ref">FEDCHAS · Note N° 014 — 2026</div>
+      <h3>Suspension des activités de retraite, secteurs 1 à 6</h3>
+      <div class="meta">Publié le 27 août 2026 · Direction des Ministères de la Jeunesse</div>
+    </div>
+
+    <div class="section-label">
+      <span class="title">Dernières publications</span>
+    </div>
+
+    <a class="row" style="text-decoration:none;color:inherit;">
+      <div class="thumb tone-green"></div>
+      <div class="content">
+        <div class="eyebrow tone-green">Journée mondiale · Éclaireurs</div>
+        <h4>Le visuel du maillot 2026 dévoilé</h4>
+        <div class="date">25 août 2026</div>
+      </div>
+    </a>
+
+    <a class="row" style="text-decoration:none;color:inherit;">
+      <div class="thumb video tone-blue"></div>
+      <div class="content">
+        <div class="eyebrow tone-blue">Vidéo · Récap</div>
+        <h4>Retraite spirituelle des Ambassadeurs</h4>
+        <div class="date">21 août 2026</div>
+      </div>
+    </a>
+
+    <a class="row" style="text-decoration:none;color:inherit; border-bottom:none;">
+      <div class="thumb tone-gold"></div>
+      <div class="content">
+        <div class="eyebrow tone-gold">Article · Témoignage</div>
+        <h4>Trois jeunes racontent leur baptême à Pétion-Ville</h4>
+        <div class="date">18 août 2026</div>
+      </div>
+    </a>
+
+    <a class="load-more">Charger plus</a>
+
+  {% endblock %}

@@ -1,0 +1,26 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="page-intro">
+      <h1>Émissions</h1>
+      <p>Rubriques et prédications de COJA7</p>
+    </div>
+
+    <div class="card-grid">
+      <a href="{{ url_for('emissions.rubrics') }}" class="entity-card">
+        <div class="spine" style="background:#7A5A28;"></div>
+        <div class="info">
+          <h3>Rubriques</h3>
+          <div class="count">{{ counts.get('rubrics', 0) }} épisode{{ 's' if counts.get('rubrics', 0) > 1 else '' }}</div>
+        </div>
+      </a>
+      <a href="{{ url_for('emissions.sermons') }}" class="entity-card">
+        <div class="spine" style="background:#1D4E89;"></div>
+        <div class="info">
+          <h3>Sermons</h3>
+          <div class="count">{{ counts.get('sermons', 0) }} prédication{{ 's' if counts.get('sermons', 0) > 1 else '' }}</div>
+        </div>
+      </a>
+    </div>
+{% endblock %}
