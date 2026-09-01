@@ -33,11 +33,11 @@ def get_recent_items(limit=5):
             "eyebrow": r["category"] or "Rubrique", "tone": "green",
         })
 
-    for e in supabase.table("events").select("id,title,description, hero_media_url, start_date").order("start_date", desc=True).limit(limit).execute().data:
+    for e in supabase.table("events").select("id,title,description, hero_media_url, hero_media_type, start_date").order("start_date", desc=True).limit(limit).execute().data:
         items.append({
             "type": "event", "title": e["title"], "date": e["start_date"],
             "url": url_for("calendar"),
-            "eyebrow": "Événement", "tone": "green", "description": e["description"], "hero_media_url": e["hero_media_url"]
+            "eyebrow": "Événement", "tone": "green", "description": e["description"], "hero_media_url": e["hero_media_url"], "hero_media_type": e["hero_media_type"]
         })
 
     items.sort(key=lambda i: i["date"] or "", reverse=True)
@@ -83,8 +83,12 @@ def get_featured_content() -> tuple[dict | None, dict | None]:
     return hero, federation
     
 def get_communications_count_by_federation():
-    response = supabase.rpc("count_communications_by_federation").execute()
-    return {row["federation"]: row["count"] for row in response.data}
+    response = (
+        supabase.table("communications")
+        .select("federation")
+        .execute()
+    )
+    return dict(Counter(row["federation"] for row in response.data))
 
 def get_federation_news(federation):
     return (

@@ -12,11 +12,19 @@
     </a>
     <h1>{{ item.title }}</h1>
     <p>{{ item.author }}{% if item.reference %} — {{ item.reference }}{% endif %}</p>
+    
     {% elif hero.type == 'event' %}
         <div class="eyebrow"><span class="dot"></span>Événement · {{ item.department or "COJA7" }}</div>
         {% if item.hero_media_url %}
           <div class="hero-media">
+            {% if item.hero_media_type == 'video' %}
+              <video class="hero_media_video" controls>
+                <source src="{{ item.hero_media_url }}" type="video/mp4">
+                Votre navigateur ne supporte pas la balise vidéo.
+              </video>
+            {% else %}
               <img class="hero_media_image" src="{{ item.hero_media_url }}" alt="">
+            {% endif %}
           </div>
         {% endif %}
         <a class="frame" href="{{ url_for('calendar') }}"></a>
@@ -24,6 +32,7 @@
         <p>{{ item.description }}</p>
         <br>
         <p>{{ item.time_label or (item.start_date | date_fr) }}{% if item.location %} — {{ item.location }}{% endif %}</p>
+  
   {% elif hero.type == 'rubric' %}
     <div class="eyebrow"><span class="dot"></span>Rubrique · {{ item.category or "" }}</div>
     <a class="frame" href="{{ url_for('emissions.rubrics') }}">
@@ -31,6 +40,7 @@
     </a>
     <h1>{{ item.title }}</h1>
     <p>{{ item.speaker or "" }}</p>
+  
   {% elif hero.type == 'communication' %}
     <div class="eyebrow"><span class="dot"></span>Communiqué · {{ item.department or "" }}</div>
     <a class="frame" href="{{ url_for('communications.federation_detail', note_id=item.id, federation=item.department) }}"></a>
