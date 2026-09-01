@@ -3,3 +3,4 @@
 3. Les pdf 
 4. Le stockage
 5. Les search bars (Médias, Rubriques, Sermons)
+6. Le(s) placeholder(s) de chargement 
