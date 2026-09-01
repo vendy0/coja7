@@ -1,6 +1,6 @@
 from flask import Flask, render_template
 from datetime import datetime
-from database import get_feature
+from database import fetch_content_item, get_featured_content, get_recent_items
 from blueprints.communications import bp_communications
 from blueprints.emissions import bp_emissions
 from blueprints.medias import bp_medias
@@ -11,17 +11,10 @@ app.register_blueprint(bp_communications)
 app.register_blueprint(bp_emissions)
 app.register_blueprint(bp_medias)
 
-# La route index reste dans app.py
-@app.route("/")
-def index():
-    events = get_feature() or []
-    return render_template("index.html", events=events, page_title="Accueil", active_page="accueil")
-
 MOIS_FR = [
     "janvier", "février", "mars", "avril", "mai", "juin",
     "juillet", "août", "septembre", "octobre", "novembre", "décembre",
 ]
-
 
 @app.template_filter("date_fr")
 def date_fr(value):
@@ -34,6 +27,20 @@ def date_fr(value):
         return value
     return f"{dt.day} {MOIS_FR[dt.month - 1]} {dt.year}"
 
+@app.route("/")
+def index():
+    hero, federation = get_featured_content()
+
+    return render_template(
+        "index.html",
+        hero=hero,
+        federation=federation,
+        recent_items=get_recent_items(),
+        active_page="accueil",
+        page_title="Accueil",
+    )
+
+    
 @app.route("/calendar")
 def calendar():
     # TODO : requête vers la table events, groupée par jour du mois affiché

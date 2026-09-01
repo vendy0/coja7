@@ -2,64 +2,72 @@
 
 {% block content %}
 
-    <section class="featured">
-      <div class="eyebrow"><span class="dot"></span>Sermon · Culte du Sabbat</div>
-      <div class="frame">
-        <div class="play">
-          <svg viewBox="0 0 12 12" fill="#FFFFFF"><polygon points="0,0 12,6 0,12"/></svg>
-        </div>
-      </div>
-      <h1>Marcher dans la foi en temps d'incertitude</h1>
-      <p>Pasteur Jean Bernard Banathe — enregistré au Bureau de la FEDCHAS, 29 août 2026</p>
-    <ul>
-    {% for key, value in events[0].items()%}
-        <li>{{ key }}</li>
-    {% endfor %}
-    <hr>
-    {% for event in events %}
-        {{ event.youtube_id }}
+<section class="featured">
+  {% if hero %}
+  {% set item = hero.data %}
+  {% if hero.type == 'sermon' %}
+    <div class="eyebrow"><span class="dot"></span>Sermon · {{ item.reference or "Culte" }}</div>
+    <a class="frame" href="{{ url_for('emissions.sermon_detail', sermon_id=item.id) }}">
+      <div class="play"><svg viewBox="0 0 12 12" fill="#FFFFFF"><polygon points="0,0 12,6 0,12"/></svg></div>
+    </a>
+    <h1>{{ item.title }}</h1>
+    <p>{{ item.author }}{% if item.reference %} — {{ item.reference }}{% endif %}</p>
+    {% elif hero.type == 'event' %}
+        <div class="eyebrow"><span class="dot"></span>Événement · {{ item.department or "COJA7" }}</div>
+        {% if item.hero_media_url %}
+          <div class="hero-media">
+              <img class="hero_media_image" src="{{ item.hero_media_url }}" alt="">
+          </div>
+        {% endif %}
+        <a class="frame" href="{{ url_for('calendar') }}"></a>
+        <h1>{{ item.title }}</h1>
+        <p>{{ item.description }}</p>
         <br>
-    {% endfor %}
-    </ul>
-    </section>
+        <p>{{ item.time_label or (item.start_date | date_fr) }}{% if item.location %} — {{ item.location }}{% endif %}</p>
+  {% elif hero.type == 'rubric' %}
+    <div class="eyebrow"><span class="dot"></span>Rubrique · {{ item.category or "" }}</div>
+    <a class="frame" href="{{ url_for('emissions.rubrics') }}">
+      <div class="play"><svg viewBox="0 0 12 12" fill="#FFFFFF"><polygon points="0,0 12,6 0,12"/></svg></div>
+    </a>
+    <h1>{{ item.title }}</h1>
+    <p>{{ item.speaker or "" }}</p>
+  {% elif hero.type == 'communication' %}
+    <div class="eyebrow"><span class="dot"></span>Communiqué · {{ item.department or "" }}</div>
+    <a class="frame" href="{{ url_for('communications.federation_detail', note_id=item.id, federation=item.department) }}"></a>
+    <h1>{{ item.title }}</h1>
+    <p>{{ item.author or "" }}</p>
+  {% endif %}
+  {% else %}
+  <p>Aucun contenu à la une pour le moment.</p>
+  {% endif %}
+</section>
 
-    <div class="fedchas">
-      <img class="seal-watermark" src="{{ url_for('static', filename='img/logo.jpg') }}" alt="Logo COJA7">
-      <div class="ref">FEDCHAS · Note N° 014 — 2026</div>
-      <h3>Suspension des activités de retraite, secteurs 1 à 6</h3>
-      <div class="meta">Publié le 27 août 2026 · Direction des Ministères de la Jeunesse</div>
-    </div>
+{% if federation %}
+<a class="federation" style="text-decoration:none;color:inherit;"
+   href="{{ url_for('communications.federation_detail', note_id=federation.data.id, federation=federation.data.department) }}">
+  <img class="seal-watermark" src="{{ url_for('static', filename='img/logo.jpg') }}" alt="Logo COJA7">
+  <div class="ref">FEDCHAS · {{ federation.data.reference_number or "Note" }}</div>
+  <h3>{{ federation.data.title }}</h3>
+  <div class="meta">Publié le {{ federation.data.published_at | date_fr }} · {{ federation.data.department or "" }}</div>
+</a>
+{% endif %}
 
     <div class="section-label">
       <span class="title">Dernières publications</span>
     </div>
 
-    <a class="row" style="text-decoration:none;color:inherit;">
-      <div class="thumb tone-green"></div>
-      <div class="content">
-        <div class="eyebrow tone-green">Journée mondiale · Éclaireurs</div>
-        <h4>Le visuel du maillot 2026 dévoilé</h4>
-        <div class="date">25 août 2026</div>
-      </div>
-    </a>
-
-    <a class="row" style="text-decoration:none;color:inherit;">
-      <div class="thumb video tone-blue"></div>
-      <div class="content">
-        <div class="eyebrow tone-blue">Vidéo · Récap</div>
-        <h4>Retraite spirituelle des Ambassadeurs</h4>
-        <div class="date">21 août 2026</div>
-      </div>
-    </a>
-
-    <a class="row" style="text-decoration:none;color:inherit; border-bottom:none;">
-      <div class="thumb tone-gold"></div>
-      <div class="content">
-        <div class="eyebrow tone-gold">Article · Témoignage</div>
-        <h4>Trois jeunes racontent leur baptême à Pétion-Ville</h4>
-        <div class="date">18 août 2026</div>
-      </div>
-    </a>
+{% for item in recent_items %}
+<a class="row" href="{{ item.url }}" style="text-decoration:none;color:inherit;{% if loop.last %}border-bottom:none;{% endif %}">
+  <div class="thumb {{ 'video' if item.type == 'sermon' }} tone-{{ item.tone }}"></div>
+  <div class="content">
+    <div class="eyebrow tone-{{ item.tone }}">{{ item.eyebrow }}</div>
+    <h4>{{ item.title }}</h4>
+    <div class="date">{{ item.date | date_fr }}</div>
+  </div>
+</a>
+{% else %}
+<p>Aucune publication récente.</p>
+{% endfor %}
 
     <a class="load-more">Charger plus</a>
 
