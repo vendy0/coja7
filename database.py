@@ -36,7 +36,7 @@ def get_recent_items(limit=5):
     for e in supabase.table("events").select("id,title,description, hero_media_url, hero_media_type, start_date").order("start_date", desc=True).limit(limit).execute().data:
         items.append({
             "type": "event", "title": e["title"], "date": e["start_date"],
-            "url": url_for("calendar"),
+            "url": url_for("calendar_event", event_id=e["id"]),
             "eyebrow": "Événement", "tone": "green", "description": e["description"], "hero_media_url": e["hero_media_url"], "hero_media_type": e["hero_media_type"]
         })
 
@@ -153,6 +153,27 @@ def get_sermon_detail(sermon_id):
         supabase.table("sermons")
         .select("*")
         .eq("id", sermon_id)
+        .single()
+        .execute()
+        .data
+    )
+
+def get_all_events():
+    """Récupère tous les événements (utilisé pour construire la grille du calendrier)."""
+    return (
+        supabase.table("events")
+        .select("id, title, description, start_date, end_date, time_label, location, department, status")
+        .order("start_date")
+        .execute()
+        .data
+    )
+
+def get_event_detail(event_id):
+    """Récupère un événement par son UUID (page de détail /calendar/event/<id>)."""
+    return (
+        supabase.table("events")
+        .select("*")
+        .eq("id", event_id)
         .single()
         .execute()
         .data

@@ -13,7 +13,7 @@
 {% block device_body %}
   <header>
     <div class="badge"><img src="{{ url_for('static', filename='img/logo.jpg') }}" alt="Logo COJA7"></div>
-    <div class="wordmark"><span class="name"><span class="name_coja">COJA</span><span class="name_seven">7</span></span></div>
+    <div class="wordmark"><strong class="name"><span class="name_coja">COJA</span><span class="name_seven">7</span></strong></div>
     {% block header_extra %}{% if active_page != 'accueil' %}<div class="back">{{ page_title }}</div>{% endif %}{% endblock %}
   </header>
 

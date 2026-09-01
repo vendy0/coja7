@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="event-detail">
+    <a class="back-link" href="{{ url_for('calendar', year=back_year, month=back_month, day=back_day) if back_day else url_for('calendar') }}">
+      &larr; Aller au calendrier
+    </a>
+
+    {% if event.hero_media_url and event.hero_media_type == "image" %}
+      <div class="event-detail-hero">
+        <img src="{{ event.hero_media_url }}" alt="{{ event.title }}">
+      </div>
+    {% endif %}
+
+    <div class="event-detail-header">
+      <h1>{{ event.title }}</h1>
+      {% if event.status == "completed" %}
+        <span class="status-tag status-completed">Terminé</span>
+      {% elif event.status == "cancelled" %}
+        <span class="status-tag status-cancelled">Annulé</span>
+      {% else %}
+        <span class="status-tag status-upcoming">À venir</span>
+      {% endif %}
+    </div>
+
+    <div class="event-detail-meta">
+      <div class="meta-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="5.5" width="16" height="14" rx="0.5"/><path d="M4 10h16M8 3.5v4M16 3.5v4"/></svg>
+        <span>
+          {% if is_multi_day %}
+            Du {{ event.start_date | date_fr }} au {{ event.end_date | date_fr }}
+          {% else %}
+            {{ event.start_date | date_fr }}
+          {% endif %}
+        </span>
+      </div>
+      {% if event.time_label %}
+      <div class="meta-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+        <span>{{ event.time_label }}</span>
+      </div>
+      {% endif %}
+      {% if event.location %}
+      <div class="meta-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <span>{{ event.location }}</span>
+      </div>
+      {% endif %}
+      {% if event.department %}
+      <div class="meta-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="18" height="13" rx="0.5"/><path d="M8 7V4.5a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1V7"/></svg>
+        <span>{{ event.department }}</span>
+      </div>
+      {% endif %}
+    </div>
+
+    {% if event.description %}
+    <div class="event-detail-description">
+      <p>{{ event.description }}</p>
+    </div>
+    {% endif %}
+  </div>
+{% endblock %}
