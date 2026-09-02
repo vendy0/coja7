@@ -19,7 +19,7 @@ def federation_news(federation):
         notes=notes,
         federation=federation,
         page_size=NOTES_PAGE_SIZE,
-        page_title=federation,
+        page_title=federation.upper(),
         active_page="communications",
     )
 

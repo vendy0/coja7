@@ -9,39 +9,51 @@ CONTENT_TABLE_MAP = {
     "rubric": "rubrics",
 }
 
-def get_recent_items(limit=5):
+def get_recent_items(limit=9, offset=0):
     items = []
+    
+    # On doit récupérer le cumul (offset + limit) de chaque table pour 
+    # garantir un tri chronologique global parfait.
+    fetch_limit = offset + limit
 
-    for s in supabase.table("sermons").select("id,title,published_at").order("published_at", desc=True).limit(limit).execute().data:
+    # 1. Sermons
+    for s in supabase.table("sermons").select("id,title,published_at").order("published_at", desc=True).limit(fetch_limit).execute().data:
         items.append({
             "type": "sermon", "title": s["title"], "date": s["published_at"],
             "url": url_for("emissions.sermon_detail", sermon_id=s["id"]),
             "eyebrow": "Sermon", "tone": "blue",
         })
 
-    for c in supabase.table("communications").select("id,title,department,federation,published_at").order("published_at", desc=True).limit(limit).execute().data:
+    # 2. Communications
+    for c in supabase.table("communications").select("id,title,department,federation,published_at").order("published_at", desc=True).limit(fetch_limit).execute().data:
         items.append({
             "type": "communication", "title": c["title"], "date": c["published_at"],
             "url": url_for("communications.federation_detail", note_id=c["id"], federation=c["federation"]),
             "eyebrow": c["department"] or "Communiqué", "tone": "gold",
         })
 
-    for r in supabase.table("rubrics").select("id,title,category,published_at").order("published_at", desc=True).limit(limit).execute().data:
+    # 3. Rubriques
+    for r in supabase.table("rubrics").select("id,title,category,published_at").order("published_at", desc=True).limit(fetch_limit).execute().data:
         items.append({
             "type": "rubric", "title": r["title"], "date": r["published_at"],
             "url": url_for("emissions.rubrics"),
             "eyebrow": r["category"] or "Rubrique", "tone": "green",
         })
 
-    for e in supabase.table("events").select("id,title,description, hero_media_url, hero_media_type, start_date").order("start_date", desc=True).limit(limit).execute().data:
+    # 4. Événements
+    for e in supabase.table("events").select("id,title,description, hero_media_url, hero_media_type, start_date").order("start_date", desc=True).limit(fetch_limit).execute().data:
         items.append({
             "type": "event", "title": e["title"], "date": e["start_date"],
             "url": url_for("calendar_event", event_id=e["id"]),
             "eyebrow": "Événement", "tone": "green", "description": e["description"], "hero_media_url": e["hero_media_url"], "hero_media_type": e["hero_media_type"]
         })
 
+    # Tri global de tous les éléments fusionnés, de la date la plus récente à la plus ancienne
     items.sort(key=lambda i: i["date"] or "", reverse=True)
-    return items[:limit]
+    
+    # On isole et retourne uniquement les éléments de la page actuelle
+    return items[offset : offset + limit]
+
     
 def fetch_content_item(content_type: str, content_id: str | int) -> dict | None:
     """Récupère les détails d'un contenu spécifique selon son type et son ID."""

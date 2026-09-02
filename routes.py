@@ -12,6 +12,8 @@ app.register_blueprint(bp_communications)
 app.register_blueprint(bp_emissions)
 app.register_blueprint(bp_medias)
 
+LAST_NEWS_PAGE_SIZE = 9
+
 MOIS_FR = [
     "janvier", "février", "mars", "avril", "mai", "juin",
     "juillet", "août", "septembre", "octobre", "novembre", "décembre",
@@ -36,12 +38,21 @@ def index():
         "index.html",
         hero=hero,
         federation=federation,
+        page_size=LAST_NEWS_PAGE_SIZE,
         recent_items=get_recent_items(),
         active_page="accueil",
         page_title="Accueil",
     )
 
-    
+@app.route("/load_more_news")
+def load_more_news():
+    """Renvoie le prochain lot de notes en HTML (fragment), pour le bouton 'Charger plus'."""
+    offset = request.args.get("offset", default=0, type=int)
+    recent_items = get_recent_items(limit=LAST_NEWS_PAGE_SIZE, offset=offset) or []
+    html = render_template("_last_news_rows.html", recent_items=recent_items, offset=offset)
+    return jsonify(html=html, has_more=len(recent_items) == LAST_NEWS_PAGE_SIZE)
+
+
 def _parse_event_datetime(value):
     """Parse une date/heure ISO (renvoyée par Supabase) en datetime, ou None."""
     if not value:

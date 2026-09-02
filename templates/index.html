@@ -56,7 +56,7 @@
 <a class="federation" style="text-decoration:none;color:inherit;"
    href="{{ url_for('communications.federation_detail', note_id=federation.data.id, federation=federation.data.department) }}">
   <img class="seal-watermark" src="{{ url_for('static', filename='img/logo.jpg') }}" alt="Logo COJA7">
-  <div class="ref">FEDCHAS · {{ federation.data.reference_number or "Note" }}</div>
+  <div class="ref">{{ federation.data.federation | upper or "" }} · {{ federation.data.reference_number or "Note" }}</div>
   <h3>{{ federation.data.title }}</h3>
   <div class="meta">Publié le {{ federation.data.published_at | date_fr }} · {{ federation.data.department or "" }}</div>
 </a>
@@ -65,20 +65,22 @@
     <div class="section-label">
       <span class="title">Dernières publications</span>
     </div>
+    
+    <div id="notes-list">
+      {% if recent_items %}
+        {% set offset = 0 %}
+        {% include "_last_news_rows.html" %}
+      {% else %}
+        <p>Aucune publication récente.</p>
+      {% endif %}
+    </div>
 
-{% for item in recent_items %}
-<a class="row" href="{{ item.url }}" style="text-decoration:none;color:inherit;{% if loop.last %}border-bottom:none;{% endif %}">
-  <div class="thumb {{ 'video' if item.type == 'sermon' }} tone-{{ item.tone }}"></div>
-  <div class="content">
-    <div class="eyebrow tone-{{ item.tone }}">{{ item.eyebrow }}</div>
-    <h4>{{ item.title }}</h4>
-    <div class="date">{{ item.date | date_fr }}</div>
-  </div>
-</a>
-{% else %}
-<p>Aucune publication récente.</p>
-{% endfor %}
-
-    <a class="load-more">Charger plus</a>
+    <a class="load-more"
+       data-load-more
+       data-url="{{ url_for('load_more_news') }}"
+       data-target="#notes-list"
+       data-offset="{{ recent_items|length }}"
+       data-limit="{{ page_size }}"
+       {% if recent_items|length < page_size %}style="display:none;"{% endif %}>Charger plus</a>
 
   {% endblock %}
