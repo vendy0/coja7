@@ -1,0 +1,16 @@
+{% for rubric in rubrics %}
+<div class="video-card">
+  <div class="video-wrapper">
+    <iframe src="https://www.youtube.com/embed/{{ rubric.youtube_id }}" title="{{ rubric.title }}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  </div>
+  <div class="video-info">
+    <span class="category-tag">{{ rubric.category or "Non catégorisé" }}</span>
+    <h3>{{ rubric.title }}</h3>
+    <p>{{ rubric.description }}</p>
+    <div class="speaker">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span>{{ rubric.speaker or "Intervenant" }}</span>
+    </div>
+  </div>
+</div>
+{% endfor %}

@@ -1,0 +1,17 @@
+{% for gallery in galleries %}
+<a class="gallery-card" href="{{ url_for('medias.galerie_detail', gallery_id=gallery.id) }}" {% if gallery.cover_image_url %}style="background-image: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.7) 100%), url('{{ gallery.cover_image_url }}'); background-size: cover; background-position: center;"{% endif %}>
+  <div class="count">
+    {% if gallery.photo_count > 0 %}
+    <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="1"/><circle cx="9" cy="11" r="2"/><path d="M21 16l-5-4-4 3-3-2-6 4"/></svg>{{ gallery.photo_count }}</span>
+    {% endif %}
+    {% if gallery.video_count > 0 %}
+    <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polygon points="5,3 19,12 5,21"/></svg>{{ gallery.video_count }}</span>
+    {% endif %}
+  </div>
+  <div class="info">
+    <div class="eyebrow">{{ gallery.department or "" }}</div>
+    <h3>{{ gallery.title }}</h3>
+    <div class="date">{{ gallery.event_date | date_fr }}</div>
+  </div>
+</a>
+{% endfor %}

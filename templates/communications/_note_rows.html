@@ -1,0 +1,11 @@
+{% for note in notes %}
+<a class="note-row{% if loop.first and (offset or 0) == 0 %} latest{% endif %}"
+   href="{{ url_for('communications.federation_detail', note_id=note.id, federation=note.federation) }}">
+  <div class="top-line">
+    <span class="ref">{{ note.reference_number or "" }}</span>
+    <span class="date">{{ note.published_at | date_fr }}</span>
+  </div>
+  <h4>{{ note.title }}</h4>
+  <div class="dept">{{ note.department or "" }}{% if note.pdf_url %} <span class="pdf">PDF</span>{% endif %}</div>
+</a>
+{% endfor %}

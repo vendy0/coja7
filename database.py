@@ -90,12 +90,14 @@ def get_communications_count_by_federation():
     )
     return dict(Counter(row["federation"] for row in response.data))
 
-def get_federation_news(federation):
+def get_federation_news(federation, limit=10, offset=0):
+    """Récupère les notes d'une fédération, paginées (limit/offset)."""
     return (
         supabase.table("communications")
         .select("id, reference_number, title, department, pdf_url, federation, published_at")
         .eq("federation", federation)
         .order("published_at", desc=True)
+        .range(offset, offset + limit - 1)
         .execute()
         .data
     )
@@ -127,22 +129,24 @@ def get_emissions_count():
     # 2. Compte les occurrences (ex: Counter({'fedchas': 14, 'mipah': 3}))
     return {"rubrics": rubrics, "sermons": sermons}
 
-def get_all_rubrics():
-    """Récupère toutes les rubriques classées par date de publication."""
+def get_all_rubrics(limit=9, offset=0):
+    """Récupère les rubriques classées par date de publication, paginées (limit/offset)."""
     return (
         supabase.table("rubrics")
         .select("*")
         .order("published_at", desc=True)
+        .range(offset, offset + limit - 1)
         .execute()
         .data
     )
 
-def get_all_sermons():
-    """Récupère tous les sermons classés par date de publication."""
+def get_all_sermons(limit=10, offset=0):
+    """Récupère les sermons classés par date de publication, paginés (limit/offset)."""
     return (
         supabase.table("sermons")
         .select("id, title, subtitle, reference, published_at")
         .order("published_at", desc=True)
+        .range(offset, offset + limit - 1)
         .execute()
         .data
     )
@@ -179,12 +183,13 @@ def get_event_detail(event_id):
         .data
     )
 
-def get_all_galleries():
-    """Récupère toutes les galeries avec leurs médias associés pour compter photos et vidéos."""
+def get_all_galleries(limit=12, offset=0):
+    """Récupère les galeries (avec leurs médias associés pour compter photos/vidéos), paginées (limit/offset)."""
     response = (
         supabase.table("galleries")
         .select("*, media_items(type)")
         .order("event_date", desc=True)
+        .range(offset, offset + limit - 1)
         .execute()
     )
     

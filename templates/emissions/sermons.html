@@ -14,18 +14,19 @@
       <span class="title">Tous les épisodes</span>
     </div>
 
-    {% for sermon in sermons %}
-    <a class="rubrique-row" {% if loop.last %}style="border-bottom:none;"{% endif %} href="{{ url_for('emissions.sermon_detail', sermon_id=sermon.id) }}">
-      <div class="top-line">
-        <span class="ep">{{ sermon.reference or "Sermon" }}</span>
-        <span class="date">{{ sermon.published_at | date_fr }}</span>
-      </div>
-      <h4>{{ sermon.title }}</h4>
-      <p>{{ sermon.subtitle or "" }}</p>
-    </a>
-    {% else %}
-    <p>Aucun sermon n'a été publié pour le moment.</p>
-    {% endfor %}
+    <div id="sermons-list">
+      {% if sermons %}
+        {% include "emissions/_sermon_rows.html" %}
+      {% else %}
+      <p>Aucun sermon n'a été publié pour le moment.</p>
+      {% endif %}
+    </div>
 
-    <a class="load-more">Charger plus</a>
+    <a class="load-more"
+       data-load-more
+       data-url="{{ url_for('emissions.load_more_sermons') }}"
+       data-target="#sermons-list"
+       data-offset="{{ sermons|length }}"
+       data-limit="{{ page_size }}"
+       {% if sermons|length < page_size %}style="display:none;"{% endif %}>Charger plus</a>
 {% endblock %}

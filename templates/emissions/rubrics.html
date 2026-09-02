@@ -6,24 +6,19 @@
       <p>Retrouvez nos séries d'enseignements, conseils pratiques et chroniques spirituelles en vidéo.</p>
     </div>
 
-    <div class="video-grid">
-      {% for rubric in rubrics %}
-      <div class="video-card">
-        <div class="video-wrapper">
-          <iframe src="https://www.youtube.com/embed/{{ rubric.youtube_id }}" title="{{ rubric.title }}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-        </div>
-        <div class="video-info">
-          <span class="category-tag">{{ rubric.category or "Non catégorisé" }}</span>
-          <h3>{{ rubric.title }}</h3>
-          <p>{{ rubric.description }}</p>
-          <div class="speaker">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            <span>{{ rubric.speaker or "Intervenant" }}</span>
-          </div>
-        </div>
-      </div>
+    <div class="video-grid" id="rubrics-grid">
+      {% if rubrics %}
+        {% include "emissions/_rubric_cards.html" %}
       {% else %}
       <p>Aucune rubrique disponible pour le moment.</p>
-      {% endfor %}
+      {% endif %}
     </div>
+
+    <a class="load-more"
+       data-load-more
+       data-url="{{ url_for('emissions.load_more_rubrics') }}"
+       data-target="#rubrics-grid"
+       data-offset="{{ rubrics|length }}"
+       data-limit="{{ page_size }}"
+       {% if rubrics|length < page_size %}style="display:none;"{% endif %}>Charger plus</a>
 {% endblock %}

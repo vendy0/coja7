@@ -1,0 +1,10 @@
+{% for sermon in sermons %}
+<a class="rubrique-row" href="{{ url_for('emissions.sermon_detail', sermon_id=sermon.id) }}">
+  <div class="top-line">
+    <span class="ep">{{ sermon.reference or "Sermon" }}</span>
+    <span class="date">{{ sermon.published_at | date_fr }}</span>
+  </div>
+  <h4>{{ sermon.title }}</h4>
+  <p>{{ sermon.subtitle or "" }}</p>
+</a>
+{% endfor %}
