@@ -1,6 +1,5 @@
 {% for item in recent_items %}
 <a class="row" href="{{ item.url }}" style="text-decoration:none;color:inherit;{% if loop.last %}border-bottom:none;{% endif %}">
-  <div class="thumb {{ 'video' if item.type == 'sermon' }} tone-{{ item.tone }}"></div>
   <div class="content">
     <div class="eyebrow tone-{{ item.tone }}">{{ item.eyebrow }}</div>
     <h4>{{ item.title }}</h4>
