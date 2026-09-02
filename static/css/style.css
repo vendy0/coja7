@@ -1068,3 +1068,117 @@ nav a.active::before{ content:""; position:absolute; top:0; left:0; right:0; hei
   color:var(--ink);
 }
 .event-detail-description p{ margin:0; }
+
+/* ---------------------------------------------------------------------
+   16. ÉCRAN DE TRANSITION — #page-loader (base.html)
+   Injecté par page-loader.js au clic sur un lien de navigation classique.
+   Recouvre uniquement la zone de contenu (entre le header et le nav —
+   top/bottom fixés en JS à leur hauteur réelle) avec un squelette, dans
+   le même esprit que les placeholders de load-more.js. Ne couvre jamais
+   les navigations gérées en AJAX (calendrier, "charger plus").
+   Disparaît de lui-même quand le document est remplacé par la page
+   suivante (vraie navigation, pas de logique "hide()" à appeler).
+   --------------------------------------------------------------------- */
+#page-loader{
+  position:fixed;
+  left:0;
+  right:0;
+  z-index:500;
+  background:var(--paper);
+  overflow:hidden;
+}
+.page-skeleton-intro{ padding:22px 20px 14px; }
+.page-skeleton-intro .sk-h1{ width:55%; height:19px; border-radius:4px; margin-bottom:9px; }
+.page-skeleton-intro .sk-h2{ width:35%; height:10px; border-radius:4px; }
+
+/* ---------------------------------------------------------------------
+   17. SQUELETTES DE CHARGEMENT (skeleton) — contenu chargé en AJAX
+   Utilisés par calendar.js (liste des événements du jour) et par
+   load-more.js (listes/grilles paginées : notes, sermons, rubriques,
+   galeries). Un bloc "skeleton-bar" = une barre grise qui scintille ;
+   les variantes ci-dessous les assemblent dans la forme de chaque
+   type de contenu.
+   --------------------------------------------------------------------- */
+.skeleton-bar{
+  display:block;
+  height:10px;
+  border-radius:4px;
+  background:var(--paper-dim);
+  position:relative;
+  overflow:hidden;
+}
+.skeleton-bar::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  transform:translateX(-100%);
+  background:linear-gradient(90deg, transparent, rgba(10,28,64,0.06), transparent);
+  animation:skeleton-shimmer 1.4s ease-in-out infinite;
+}
+@keyframes skeleton-shimmer{
+  100%{ transform:translateX(100%); }
+}
+@media (prefers-reduced-motion: reduce){
+  .skeleton-bar::after{ animation:none; }
+}
+
+/* Ligne type "note-row" / "rubrique-row" (federation_news, sermons) */
+.skeleton-row{ padding:16px 20px; border-bottom:1px solid var(--hairline); }
+.skeleton-row .skeleton-bar + .skeleton-bar{ margin-top:9px; }
+.skeleton-row .sk-meta{ width:34%; height:9px; }
+.skeleton-row .sk-title{ width:78%; height:14px; }
+.skeleton-row .sk-sub{ width:52%; height:9px; }
+
+/* Ligne avec vignette, type ".row" (dernières nouvelles) */
+.skeleton-thumb-row{ display:flex; gap:14px; padding:16px 20px; border-bottom:1px solid var(--hairline); }
+.skeleton-thumb-row .sk-thumb{
+  width:76px; height:76px; flex-shrink:0; border-radius:6px;
+  background:var(--paper-dim); position:relative; overflow:hidden;
+}
+.skeleton-thumb-row .sk-thumb::after{
+  content:""; position:absolute; inset:0; transform:translateX(-100%);
+  background:linear-gradient(90deg, transparent, rgba(10,28,64,0.06), transparent);
+  animation:skeleton-shimmer 1.4s ease-in-out infinite;
+}
+.skeleton-thumb-row .sk-content{ flex:1; min-width:0; display:flex; flex-direction:column; justify-content:center; gap:8px; }
+.skeleton-thumb-row .sk-meta{ width:30%; height:9px; }
+.skeleton-thumb-row .sk-title{ width:85%; height:13px; }
+.skeleton-thumb-row .sk-sub{ width:40%; height:9px; }
+
+/* Carte type ".gallery-card" (grille de médias) */
+.skeleton-card{
+  width:calc(50% - 6px);
+  aspect-ratio:3/4;
+  border-radius:8px;
+  background:var(--paper-dim);
+  position:relative;
+  overflow:hidden;
+}
+.skeleton-card::after{
+  content:""; position:absolute; inset:0; transform:translateX(-100%);
+  background:linear-gradient(90deg, transparent, rgba(10,28,64,0.06), transparent);
+  animation:skeleton-shimmer 1.4s ease-in-out infinite;
+}
+@media (min-width:640px){ .skeleton-card{ width:calc(33.333% - 8px); } }
+@media (min-width:1000px){ .skeleton-card{ width:calc(25% - 9px); } }
+
+/* Carte vidéo type ".video-card" (rubriques) */
+.skeleton-video{ padding-bottom:14px; }
+.skeleton-video .sk-frame{
+  width:100%; aspect-ratio:16/9; border-radius:6px;
+  background:var(--paper-dim); position:relative; overflow:hidden; margin-bottom:10px;
+}
+.skeleton-video .sk-frame::after{
+  content:""; position:absolute; inset:0; transform:translateX(-100%);
+  background:linear-gradient(90deg, transparent, rgba(10,28,64,0.06), transparent);
+  animation:skeleton-shimmer 1.4s ease-in-out infinite;
+}
+.skeleton-video .sk-title{ width:75%; height:13px; margin:0 0 8px; }
+.skeleton-video .sk-sub{ width:50%; height:9px; }
+
+/* Carte "événement" (calendrier — liste du jour sélectionné) */
+.event-card.skeleton-event{ cursor:default; }
+.event-card.skeleton-event .sk-time{ width:78px; height:9px; flex-shrink:0; margin-top:3px; }
+.event-card.skeleton-event .sk-title{ width:70%; height:14px; margin-bottom:9px; }
+.event-card.skeleton-event .sk-line{ width:90%; height:9px; margin-bottom:7px; }
+.event-card.skeleton-event .sk-line.short{ width:45%; margin-bottom:0; }

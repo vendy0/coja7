@@ -115,8 +115,24 @@
       }
     }
 
+    function skeletonEvents(count) {
+      var html = "";
+      for (var i = 0; i < count; i++) {
+        html +=
+          '<div class="event-card skeleton-event">' +
+          '<span class="skeleton-bar sk-time"></span>' +
+          '<div class="event-body">' +
+          '<span class="skeleton-bar sk-title"></span>' +
+          '<span class="skeleton-bar sk-line"></span>' +
+          '<span class="skeleton-bar sk-line short"></span>' +
+          "</div></div>";
+      }
+      return html;
+    }
+
     function load(year, month, day, pushState) {
       daysEl.classList.add("loading");
+      eventsListEl.innerHTML = skeletonEvents(2);
       var url = EVENTS_URL + "?year=" + year + "&month=" + month + (day ? "&day=" + day : "");
       fetch(url, { headers: { "X-Requested-With": "XMLHttpRequest" } })
         .then(function (res) {

@@ -79,6 +79,7 @@
        data-load-more
        data-url="{{ url_for('load_more_news') }}"
        data-target="#notes-list"
+       data-skeleton="thumb-row"
        data-offset="{{ recent_items|length }}"
        data-limit="{{ page_size }}"
        {% if recent_items|length < page_size %}style="display:none;"{% endif %}>Charger plus</a>

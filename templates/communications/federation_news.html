@@ -27,6 +27,7 @@
        data-load-more
        data-url="{{ url_for('communications.load_more_federation_news', federation=federation) }}"
        data-target="#notes-list"
+       data-skeleton="row"
        data-offset="{{ notes|length }}"
        data-limit="{{ page_size }}"
        {% if notes|length < page_size %}style="display:none;"{% endif %}>Charger plus</a>

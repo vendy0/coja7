@@ -18,6 +18,7 @@
        data-load-more
        data-url="{{ url_for('emissions.load_more_rubrics') }}"
        data-target="#rubrics-grid"
+       data-skeleton="video"
        data-offset="{{ rubrics|length }}"
        data-limit="{{ page_size }}"
        {% if rubrics|length < page_size %}style="display:none;"{% endif %}>Charger plus</a>

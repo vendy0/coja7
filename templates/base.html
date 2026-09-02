@@ -10,6 +10,7 @@
 {% block extra_head %}{% endblock %}
 </head>
 <body>
+  <script src="{{ url_for('static', filename='js/page-loader.js') }}"></script>
 {% block device_body %}
   <header>
     <div class="badge"><img src="{{ url_for('static', filename='img/logo.jpg') }}" alt="Logo COJA7"></div>

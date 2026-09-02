@@ -26,6 +26,7 @@
        data-load-more
        data-url="{{ url_for('emissions.load_more_sermons') }}"
        data-target="#sermons-list"
+       data-skeleton="row"
        data-offset="{{ sermons|length }}"
        data-limit="{{ page_size }}"
        {% if sermons|length < page_size %}style="display:none;"{% endif %}>Charger plus</a>

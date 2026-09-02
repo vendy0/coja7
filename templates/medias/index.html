@@ -27,6 +27,7 @@
        data-load-more
        data-url="{{ url_for('medias.load_more_galleries') }}"
        data-target="#gallery-grid"
+       data-skeleton="card"
        data-offset="{{ galleries|length }}"
        data-limit="{{ page_size }}"
        {% if galleries|length < page_size %}style="display:none;"{% endif %}>Charger plus</a>

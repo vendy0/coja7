@@ -5,7 +5,9 @@
 6. Le(s) placeholder(s) de chargement 
 7. Le petit bleu au clic
 8. Téléchargement des médias et gallerie
-9. 
+9. Ajouter les trucs de SEO (author...)
+10. Lier la page about
+11. Apprendre le MarkDown
 
 
   <!--
