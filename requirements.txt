@@ -4,7 +4,6 @@ blinker==1.9.0
 certifi==2026.7.22
 cffi==2.1.1
 click==8.5.0
-cryptography @ file:///home/builder/.termux-build/python-cryptography/src
 deprecation==2.1.0
 Flask==3.1.3
 h11==0.16.0
@@ -18,9 +17,7 @@ itsdangerous==2.2.0
 Jinja2==3.1.6
 MarkupSafe==3.0.3
 multidict==6.7.1
-numpy @ file:///home/builder/.termux-build/python-numpy/src/dist/numpy-2.4.4-cp314-cp314-android_aarch64.whl#sha256=68ef31f0d8925d96da2b5e014c2c3d32a16dd68887329eeecb7f3a548222e24d
 packaging==26.3
-pandas @ file:///home/builder/.termux-build/python-pandas/src/dist/pandas-3.0.5-cp314-cp314-android_aarch64.whl#sha256=2a35f0521e37d4736d43c1be8e440673d00f1d929bf5bc07090d0d6519e987bd
 postgrest==2.31.0
 propcache==0.5.2
 pycparser==3.0

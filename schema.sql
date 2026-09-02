@@ -1,129 +1,116 @@
 -- 1. EXTENSION UUID
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- ==========================================
--- TABLE : ADMINS
--- ==========================================
-CREATE TABLE admins (
-    id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-    first_name VARCHAR(100) NOT NULL,
-    last_name VARCHAR(100) NOT NULL,
-    phone VARCHAR(30),
-    avatar_url TEXT,
-    role VARCHAR(50) DEFAULT 'admin' CHECK (role IN ('super_admin', 'admin', 'editor')),
-    is_active BOOLEAN DEFAULT true,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+-- WARNING: This schema is for context only and is not meant to be run.
+-- Table order and constraints may not be valid for execution.
+
+CREATE TABLE public.admins (
+  id uuid NOT NULL,
+  first_name character varying NOT NULL,
+  last_name character varying NOT NULL,
+  phone character varying,
+  avatar_url text,
+  role character varying DEFAULT 'admin'::character varying CHECK (role::text = ANY (ARRAY['super_admin'::character varying, 'admin'::character varying, 'editor'::character varying]::text[])),
+  is_active boolean DEFAULT true,
+  created_at timestamp with time zone DEFAULT now(),
+  updated_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT admins_pkey PRIMARY KEY (id),
+  CONSTRAINT admins_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id)
 );
-
-
--- ==========================================
--- TABLE : EVENTS
--- ==========================================
-CREATE TABLE events (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    start_date TIMESTAMP WITH TIME ZONE NOT NULL,
-    end_date TIMESTAMP WITH TIME ZONE,
-    time_label VARCHAR(100),
-    location TEXT,
-    department VARCHAR(100),
-    status VARCHAR(50) DEFAULT 'upcoming',
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+CREATE TABLE public.events (
+  id uuid NOT NULL DEFAULT uuid_generate_v4(),
+  title character varying NOT NULL,
+  description text,
+  start_date timestamp with time zone NOT NULL,
+  end_date timestamp with time zone,
+  time_label character varying,
+  location text,
+  department character varying,
+  status character varying DEFAULT 'upcoming'::character varying,
+  created_at timestamp with time zone DEFAULT now(),
+  updated_at timestamp with time zone DEFAULT now(),
+  hero_media_url text,
+  hero_media_type text,
+  CONSTRAINT events_pkey PRIMARY KEY (id)
 );
-
--- ==========================================
--- TABLE : COMMUNICATIONS
--- ==========================================
-CREATE TABLE communications (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    reference_number VARCHAR(100),
-    title VARCHAR(255) NOT NULL,
-    subtitle VARCHAR(255),
-    department VARCHAR(100),
-    author VARCHAR(150),
-    content TEXT,
-    hero_media_type VARCHAR(20) CHECK (hero_media_type IN ('image', 'video')),
-    hero_media_url TEXT,
-    pdf_url TEXT,
-    event_id UUID REFERENCES events(id) ON DELETE SET NULL,
-    published_at TIMESTAMP WITH TIME ZONE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+CREATE TABLE public.communications (
+  id uuid NOT NULL DEFAULT uuid_generate_v4(),
+  reference_number character varying,
+  title character varying NOT NULL,
+  subtitle character varying,
+  department character varying,
+  author character varying,
+  content text,
+  hero_media_type character varying CHECK (hero_media_type::text = ANY (ARRAY['image'::character varying, 'video'::character varying]::text[])),
+  hero_media_url text,
+  pdf_url text,
+  event_id uuid,
+  published_at timestamp with time zone,
+  created_at timestamp with time zone DEFAULT now(),
+  federation text,
+  hero_media_description text DEFAULT 'Illustration du communiqué'::text,
+  CONSTRAINT communications_pkey PRIMARY KEY (id),
+  CONSTRAINT communications_event_id_fkey FOREIGN KEY (event_id) REFERENCES public.events(id)
 );
-
--- ==========================================
--- TABLE : RUBRICS
--- ==========================================
-CREATE TABLE rubrics (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    title VARCHAR(255) NOT NULL,
-    category VARCHAR(100),
-    speaker VARCHAR(150),
-    description TEXT,
-    youtube_id VARCHAR(50) NOT NULL,
-    published_at TIMESTAMP WITH TIME ZONE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+CREATE TABLE public.rubrics (
+  id uuid NOT NULL DEFAULT uuid_generate_v4(),
+  title character varying NOT NULL,
+  category character varying,
+  speaker character varying,
+  description text,
+  youtube_id character varying NOT NULL,
+  published_at timestamp with time zone,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT rubrics_pkey PRIMARY KEY (id)
 );
-
--- ==========================================
--- TABLE : SERMONS
--- ==========================================
-CREATE TABLE sermons (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    title VARCHAR(255) NOT NULL,
-    subtitle VARCHAR(255),
-    reference VARCHAR(255),
-    content TEXT,
-    author VARCHAR(150),
-    hero_media_type VARCHAR(20) CHECK (hero_media_type IN ('image', 'video')),
-    hero_media_url TEXT,
-    audio_url TEXT,
-    pdf_url TEXT,
-    event_id UUID REFERENCES events(id) ON DELETE SET NULL,
-    published_at TIMESTAMP WITH TIME ZONE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+CREATE TABLE public.sermons (
+  id uuid NOT NULL DEFAULT uuid_generate_v4(),
+  title character varying NOT NULL,
+  subtitle character varying,
+  reference character varying,
+  content text,
+  author character varying,
+  hero_media_type character varying CHECK (hero_media_type::text = ANY (ARRAY['image'::character varying, 'video'::character varying]::text[])),
+  hero_media_url text,
+  audio_url text,
+  pdf_url text,
+  event_id uuid,
+  published_at timestamp with time zone,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT sermons_pkey PRIMARY KEY (id),
+  CONSTRAINT sermons_event_id_fkey FOREIGN KEY (event_id) REFERENCES public.events(id)
 );
-
--- ==========================================
--- TABLE : GALLERIES
--- ==========================================
-CREATE TABLE galleries (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    title VARCHAR(255) NOT NULL,
-    department VARCHAR(100),
-    description TEXT,
-    cover_image_url TEXT,
-    event_date DATE,
-    event_id UUID REFERENCES events(id) ON DELETE SET NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+CREATE TABLE public.galleries (
+  id uuid NOT NULL DEFAULT uuid_generate_v4(),
+  title character varying NOT NULL,
+  department character varying,
+  description text,
+  cover_image_url text,
+  event_date date,
+  event_id uuid,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT galleries_pkey PRIMARY KEY (id),
+  CONSTRAINT galleries_event_id_fkey FOREIGN KEY (event_id) REFERENCES public.events(id)
 );
-
--- ==========================================
--- TABLE : MEDIA_ITEMS
--- ==========================================
-CREATE TABLE media_items (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    gallery_id UUID REFERENCES galleries(id) ON DELETE CASCADE,
-    type VARCHAR(20) CHECK (type IN ('photo', 'video')),
-    media_url TEXT NOT NULL,
-    thumbnails_url TEXT,
-    credit VARCHAR(150),
-    display_order INTEGER DEFAULT 0,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+CREATE TABLE public.media_items (
+  id uuid NOT NULL DEFAULT uuid_generate_v4(),
+  gallery_id uuid,
+  type character varying CHECK (type::text = ANY (ARRAY['photo'::character varying, 'video'::character varying]::text[])),
+  media_url text NOT NULL,
+  thumbnails_url text,
+  credit character varying,
+  display_order integer DEFAULT 0,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT media_items_pkey PRIMARY KEY (id),
+  CONSTRAINT media_items_gallery_id_fkey FOREIGN KEY (gallery_id) REFERENCES public.galleries(id)
 );
-
--- ==========================================
--- TABLE : FEATURED_CONTENT
--- ==========================================
-CREATE TABLE featured_content (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    content_type VARCHAR(50) NOT NULL CHECK (content_type IN ('event', 'sermon', 'communication', 'rubric')),
-    content_id UUID NOT NULL,
-    display_order INTEGER DEFAULT 0,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    CONSTRAINT unique_featured_item UNIQUE (content_type, content_id)
+CREATE TABLE public.featured_content (
+  id uuid NOT NULL DEFAULT uuid_generate_v4(),
+  content_type character varying NOT NULL CHECK (content_type::text = ANY (ARRAY['event'::character varying, 'sermon'::character varying, 'communication'::character varying, 'rubric'::character varying]::text[])),
+  content_id uuid NOT NULL,
+  display_order integer DEFAULT 0,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT featured_content_pkey PRIMARY KEY (id)
 );
 
 -- ==========================================
