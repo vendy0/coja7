@@ -41,6 +41,11 @@
 }
 
 *{ box-sizing:border-box; }
+a, button, img {
+  -webkit-tap-highlight-color: var(--hairline);
+}
+a:active, button:active, img:active{ transform:scale(0.98); }
+
 html,body{ margin:0; padding:0; }
 body {
   background: var(--paper); /*[span_6](start_span)[span_6](end_span) */
@@ -139,6 +144,7 @@ header .back{
   letter-spacing:0.08em;
   text-transform:uppercase;
   color:rgba(246,244,238,0.7);
+  -webkit-tap-highlight-color: var(--hairline);
 }
 
 main{ flex:1; overflow-y:auto; }
@@ -588,8 +594,9 @@ nav a.active::before{ content:""; position:absolute; top:0; left:0; right:0; hei
   background:rgba(10,28,64,0.65); backdrop-filter:blur(4px);
   display:flex; align-items:center; justify-content:center; flex-shrink:0;
   border:1px solid rgba(255,199,44,0.3); cursor:pointer; transition:background 0.2s;
+  -webkit-tap-highlight-color: var(--hairline);
 }
-.gallery-topbar .back:active{ background:var(--gold); }
+.gallery-topbar .back:active{ background:var(--gold); transform:scale(0.98);  }
 .gallery-topbar .back svg{ width:16px; height:16px; stroke:var(--paper); }
 .gallery-topbar .titles{ line-height:1.15; }
 .gallery-topbar .titles .eyebrow{ font-family:'IBM Plex Mono', monospace; font-size:8.5px; letter-spacing:0.08em; text-transform:uppercase; color:rgba(248,249,250,0.85); }
@@ -613,6 +620,10 @@ nav a.active::before{ content:""; position:absolute; top:0; left:0; right:0; hei
   background: var(--paper-dim);
   border: 1px solid var(--hairline);
   box-shadow: 0 4px 6px -1px rgba(10, 28, 64, 0.1);
+  -webkit-tap-highlight-color: var(--hairline);
+}
+.tile:active {
+    transform:scale(0.98); 
 }
 /* L'image prend toute la largeur et conserve sa hauteur naturelle */
 .tile img {
@@ -698,6 +709,11 @@ nav a.active::before{ content:""; position:absolute; top:0; left:0; right:0; hei
   cursor: pointer;
   line-height: 1;
   z-index: 101;
+  -webkit-tap-highlight-color: var(--hairline);
+}
+.lightbox-close:active {
+  transform:scale(1.2); 
+  color: var(--gold);
 }
 
 /* Curseur pointer sur les tuiles de la galerie */
