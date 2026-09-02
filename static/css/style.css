@@ -42,6 +42,20 @@
 
 *{ box-sizing:border-box; }
 html,body{ margin:0; padding:0; }
+a, button, .tile{
+  -webkit-tap-highlight-color: var(--hairline);
+}
+a:active, button:active, .tile:active, .lightbox-close:active {
+    transform:scale(0.95); 
+}
+.lightbox-close {
+  -webkit-tap-highlight-color: transparent;
+}
+.lightbox-close:active {
+    transform:scale(1.5); 
+    color: var(--gold);
+}
+
 body {
   background: var(--paper); /*[span_6](start_span)[span_6](end_span) */
   font-family: 'IBM Plex Sans', sans-serif; /*[span_7](start_span)[span_7](end_span) */
@@ -411,6 +425,10 @@ nav a.active::before{ content:""; position:absolute; top:0; left:0; right:0; hei
   overflow:hidden;
   background:var(--paper-dim);
   position:relative;
+  transform:scale(0.95); 
+}
+.entity-card:active{
+  transform:scale(0.99); 
 }
 .entity-card .spine{ height:9px; }
 .entity-card .info{ padding:16px 14px 16px; }
@@ -877,7 +895,9 @@ nav a.active::before{ content:""; position:absolute; top:0; left:0; right:0; hei
   cursor:pointer;
   position:relative;
   text-decoration:none;
+  -webkit-tap-highlight-color: transparent;
 }
+
 .day-cell .day-num{
   width:29px;
   height:29px;
