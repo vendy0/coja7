@@ -25,7 +25,7 @@ def get_recent_items(limit=9, offset=0):
         })
 
     # 2. Communications
-    for c in supabase.table("communications").select("id,title,department,federation,published_at").order("published_at", desc=True).limit(fetch_limit).execute().data:
+    for c in supabase.table("communications").select("id,title,department,federation,published_at", ).order("published_at", desc=True).limit(fetch_limit).execute().data:
         items.append({
             "type": "communication", "title": c["title"], "date": c["published_at"],
             "url": url_for("communications.federation_detail", note_id=c["id"], federation=c["federation"]),
