@@ -25,6 +25,8 @@ function updateLightboxContent() {
   const video = document.getElementById('lightbox-video');
   const caption = document.getElementById('lightbox-caption');
   const loader = document.getElementById('lightbox-loader');
+  // NOUVEAU : Sélection du bouton de téléchargement
+  const downloadBtn = document.getElementById('lightbox-download');
 
   loader.style.display = 'block';
   img.style.display = 'none';
@@ -34,6 +36,11 @@ function updateLightboxContent() {
   img.removeAttribute('src');
 
   caption.innerText = (item.credit ? 'Crédit : ' + item.credit : '') + ` (${currentIndex + 1}/${galleryMedia.length})`;
+  
+  // NOUVEAU : Mise à jour du lien de téléchargement
+  downloadBtn.href = item.url;
+  // Optionnel : donner un nom de fichier par défaut dynamique
+  downloadBtn.download = item.type === 'video' ? `video_${currentIndex + 1}.mp4` : `image_${currentIndex + 1}.jpg`;
 
   if (item.type === 'video') {
     video.src = item.url;

@@ -42,7 +42,7 @@
 
 *{ box-sizing:border-box; }
 html,body{ margin:0; padding:0; }
-a, button, .tile, .lightbox-close {
+a, button, .tile, .lightbox-close, .lightbox-download {
   transition:
     transform 0.15s ease,
     color 0.15s ease,
@@ -306,6 +306,66 @@ nav a.active::before{ content:""; position:absolute; top:0; left:0; right:0; hei
 .topbar .top-title{ font-family:'IBM Plex Mono', monospace; font-size:10px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-soft); }
 .topbar .share-btn{ width:36px; height:36px; display:flex; align-items:center; justify-content:center; color:var(--navy); }
 .topbar .share-btn svg{ width:18px; height:18px; stroke:currentColor; stroke-width:2; fill:none; }
+
+/* Bouton de téléchargement (Galerie entière) dans la topbar */
+.gallery-topbar .download-all {
+  margin-left: auto; /* Pousse le bouton complètement à droite */
+  width: 34px; 
+  height: 34px; 
+  border-radius: 50%;
+  background: rgba(10,28,64,0.65); 
+  backdrop-filter: blur(4px);
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  flex-shrink: 0;
+  border: 1px solid rgba(255,199,44,0.3); 
+  cursor: pointer; 
+  transition: background 0.2s, color 0.2s;
+  color: var(--paper);
+}
+
+.gallery-topbar .download-all:active { 
+  background: var(--gold); 
+  color: var(--navy);
+}
+
+.gallery-topbar .download-all svg { 
+  width: 16px; 
+  height: 16px; 
+}
+
+/* Bouton de téléchargement (Image spécifique) dans la Lightbox */
+.lightbox-download {
+  position: absolute;
+  top: 16px;
+  right: 60px; /* Positionné juste à côté de l'icône "fermer" */
+  color: var(--paper);
+  z-index: 101;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.lightbox-download:active {
+  transform: scale(1.15);
+  color: var(--gold);
+}
+
+.lightbox-download svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* Sur les très petits écrans, on ajuste l'espacement de la topbar */
+@media (max-width: 340px) {
+  .gallery-topbar .titles h1 {
+    font-size: 13px; /* Pour éviter que le titre ne chevauche le nouveau bouton */
+  }
+}
+
 
 .document-scroll{ flex:1; overflow-y:auto; position:relative; }
 .watermark{

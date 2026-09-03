@@ -6,7 +6,7 @@
       &larr; Aller au calendrier
     </a>
 
-    {% if event.hero_media_url and event.hero_media_type == "image" %}
+    {% if event.hero_media_url %}
       <div class="event-detail-hero">
         <img src="{{ event.hero_media_url }}" alt="{{ event.title }}">
       </div>

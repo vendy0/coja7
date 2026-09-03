@@ -6,6 +6,6 @@
     <span class="date">{{ note.published_at | date_fr }}</span>
   </div>
   <h4>{{ note.title }}</h4>
-  <div class="dept">{{ note.department or "" }}{% if note.pdf_url %} <span class="pdf">PDF</span>{% endif %}</div>
+  <div class="dept">{{ note.department or "" }} {%  if note.download_type %} <span class="pdf">{{ note.download_type | upper }}</span>{% endif %}</div>
 </a>
 {% endfor %}

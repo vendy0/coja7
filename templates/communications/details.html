@@ -58,10 +58,10 @@
         <div class="role">{{ note.department or "" }}</div>
       </div>
 
-      {% if note.pdf_url %}
-      <a href="{{ note.pdf_url }}" class="pdf-download" target="_blank">
+      {% if note.download_type %}
+      <a href="{{ note.download_url }}" class="pdf-download" target="_blank">
         <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Télécharger la note (PDF)
+        {{"Télécharger la note (PDF)" if note.download_type == "pdf" else "Télécharger l'audio"}}
       </a>
       {% endif %}
 

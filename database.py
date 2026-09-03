@@ -41,11 +41,11 @@ def get_recent_items(limit=9, offset=0):
         })
 
     # 4. Événements
-    for e in supabase.table("events").select("id,title,description, hero_media_url, hero_media_type, start_date").order("start_date", desc=True).limit(fetch_limit).execute().data:
+    for e in supabase.table("events").select("id,title,description, hero_media_url, start_date").order("start_date", desc=True).limit(fetch_limit).execute().data:
         items.append({
             "type": "event", "title": e["title"], "date": e["start_date"],
             "url": url_for("calendar_event", event_id=e["id"]),
-            "eyebrow": "Événement", "tone": "green", "description": e["description"], "hero_media_url": e["hero_media_url"], "hero_media_type": e["hero_media_type"]
+            "eyebrow": "Événement", "tone": "green", "description": e["description"], "hero_media_url": e["hero_media_url"]
         })
 
     # Tri global de tous les éléments fusionnés, de la date la plus récente à la plus ancienne
@@ -106,7 +106,7 @@ def get_federation_news(federation, limit=10, offset=0):
     """Récupère les notes d'une fédération, paginées (limit/offset)."""
     return (
         supabase.table("communications")
-        .select("id, reference_number, title, department, pdf_url, federation, published_at")
+        .select("id, reference_number, title, department, download_type, federation, published_at")
         .eq("federation", federation)
         .order("published_at", desc=True)
         .range(offset, offset + limit - 1)
