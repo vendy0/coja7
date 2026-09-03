@@ -1,16 +1,22 @@
 from flask import Flask, render_template, request, jsonify, abort
+import os
 from datetime import datetime, date, timedelta
 import calendar as pycalendar
-from database import fetch_content_item, get_featured_content, get_recent_items, get_all_events, get_event_detail
+from database import fetch_content_item, get_featured_content, get_recent_items, get_events_for_grid, get_event_detail
 from blueprints.communications import bp_communications
 from blueprints.emissions import bp_emissions
 from blueprints.medias import bp_medias
+from blueprints.admins import bp_admins
+
 app = Flask(__name__)
 
 # Enregistrement du Blueprint
 app.register_blueprint(bp_communications)
 app.register_blueprint(bp_emissions)
 app.register_blueprint(bp_medias)
+app.register_blueprint(bp_admins)
+
+app.secret_key = os.environ["FLASK_SECRET_KEY"]
 
 LAST_NEWS_PAGE_SIZE = 9
 
@@ -64,11 +70,7 @@ def _parse_event_datetime(value):
 
 
 def _build_calendar_context(year, month, day_param):
-    """Construit la grille du mois + les événements du jour sélectionné.
-
-    Utilisé à la fois par la route HTML (premier chargement) et par la
-    route JSON (navigation en AJAX, sans rechargement de page).
-    """
+    """Construit la grille du mois + les événements du jour sélectionné."""
     today = date.today()
 
     # Normalise un mois hors bornes (navigation < / >) en reportant sur l'année
@@ -77,15 +79,21 @@ def _build_calendar_context(year, month, day_param):
     elif month > 12:
         month, year = 1, year + 1
 
-    # Grille du mois : semaines de 7 dates (Lundi -> Dimanche), déborde sur
-    # le mois précédent/suivant pour compléter la première/dernière semaine
+    # Grille du mois : semaines de 7 dates (Lundi -> Dimanche)
     month_calendar = pycalendar.Calendar(firstweekday=0)
     month_weeks = month_calendar.monthdatescalendar(year, month)
 
-    # Récupère les événements et les indexe par jour (un événement multi-jours
-    # apparaît sur chacun des jours de sa plage)
+    # 1. Calculer les bornes exactes de la grille affichée 
+    # (du 1er jour de la 1ère semaine au dernier de la dernière)
+    grid_start = month_weeks[0][0]
+    grid_end = month_weeks[-1][-1]
+
+    # 2. On récupère UNIQUEMENT les événements de cette plage depuis Supabase
+    db_events = get_events_for_grid(grid_start, grid_end)
+
+    # Récupère les événements et les indexe par jour
     events_by_day = {}
-    for event in get_all_events():
+    for event in db_events:
         start_dt = _parse_event_datetime(event.get("start_date"))
         if not start_dt:
             continue
@@ -94,8 +102,11 @@ def _build_calendar_context(year, month, day_param):
         event["_start"] = start_dt
         cursor = start_dt.date()
         last_day = end_dt.date()
+        
         while cursor <= last_day:
-            events_by_day.setdefault(cursor, []).append(event)
+            # Sécurité: on ne garde en mémoire que les jours inclus dans la grille visible
+            if grid_start <= cursor <= grid_end:
+                events_by_day.setdefault(cursor, []).append(event)
             cursor += timedelta(days=1)
 
     weeks = []
@@ -122,6 +133,7 @@ def _build_calendar_context(year, month, day_param):
             selected_date = datetime.strptime(day_param, "%Y-%m-%d").date()
         except ValueError:
             selected_date = None
+            
     if selected_date is None:
         selected_date = today if (today.year == year and today.month == month) else date(year, month, 1)
 
@@ -147,6 +159,7 @@ def _build_calendar_context(year, month, day_param):
         "selected_date_label": f"{selected_date.day} {MOIS_FR[selected_date.month - 1]}",
         "selected_events": selected_events,
     }
+
 
 
 def _event_json(event):

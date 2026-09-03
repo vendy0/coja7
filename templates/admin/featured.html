@@ -1,0 +1,70 @@
+{% extends "admin/base_admin.html" %}
+{% block page_title %}À la une{% endblock %}
+{% block header_title %}Contenu à la une{% endblock %}
+{% block content %}
+<div class="admin-panel">
+  <h2>Actuellement à la une</h2>
+  <div class="admin-table-wrap">
+    <table class="admin-table">
+      <thead><tr><th>Type</th><th>Contenu</th><th>Ordre</th><th></th></tr></thead>
+      <tbody>
+        {% for item in current %}
+        <tr>
+          <td>{{ item.content_type }}</td>
+          <td class="admin-mono">{{ item.content_id }}</td>
+          <td>{{ item.display_order }}</td>
+          <td class="admin-table-actions">
+            <form method="post" action="{{ url_for('admins.featured_delete', featured_id=item.id) }}" data-confirm="Retirer ce contenu de la une ?">
+              <button type="submit" class="admin-link admin-link-danger">Retirer</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" class="admin-empty">Rien à la une pour l'instant.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="admin-panel">
+  <h2>Ajouter à la une</h2>
+  <form method="post" class="admin-form admin-form-inline" id="featured-form">
+    <div class="admin-field">
+      <label for="content_type">Type de contenu</label>
+      <select id="content_type" name="content_type">
+        <option value="event">Événement</option>
+        <option value="sermon">Sermon</option>
+        <option value="communication">Communication</option>
+        <option value="rubric">Rubrique</option>
+      </select>
+    </div>
+    <div class="admin-field">
+      <label for="content_id">Contenu</label>
+      {% for ftype, options in options_by_type.items() %}
+      <select name="content_id" class="admin-featured-options" data-for-type="{{ ftype }}" {{ '' if loop.first else 'hidden disabled' }}>
+        {% for opt in options %}
+          <option value="{{ opt.id }}">{{ opt.label }}</option>
+        {% endfor %}
+      </select>
+      {% endfor %}
+    </div>
+    <div class="admin-field">
+      <label for="display_order">Ordre d'affichage</label>
+      <input type="number" id="display_order" name="display_order" value="0" min="0">
+    </div>
+    <button type="submit" class="admin-btn admin-btn-primary">Ajouter</button>
+  </form>
+</div>
+
+<script>
+// Bascule le <select> de contenu affiché selon le type choisi
+document.getElementById('content_type').addEventListener('change', function () {
+  document.querySelectorAll('.admin-featured-options').forEach(function (sel) {
+    const match = sel.dataset.forType === this.value;
+    sel.hidden = !match;
+    sel.disabled = !match;
+  }, this);
+});
+</script>
+{% endblock %}

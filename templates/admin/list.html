@@ -1,0 +1,53 @@
+{% extends "admin/base_admin.html" %}
+{% block page_title %}{{ ct.label }}{% endblock %}
+{% block header_title %}{{ ct.label }}{% endblock %}
+{% block content %}
+<div class="admin-toolbar">
+  <span class="admin-toolbar-count">{{ rows|length }} élément(s)</span>
+  <a href="{{ url_for('admins.content_new', content_key=ct.key) }}" class="admin-btn admin-btn-primary">+ Ajouter</a>
+</div>
+
+<div class="admin-table-wrap">
+  <table class="admin-table">
+    <thead>
+      <tr>
+        {% for field_name, field_label in ct.list_columns %}
+          <th>{{ field_label }}</th>
+        {% endfor %}
+        <th class="admin-table-actions-col"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      <tr>
+        {% for field_name, field_label in ct.list_columns %}
+          <td>
+            {% set value = row.get(field_name) %}
+            {% if field_name.endswith('_date') or field_name.endswith('_at') %}
+              {{ value|date_fr if value else '—' }}
+            {% elif value %}
+              {{ value|truncate(60) }}
+            {% else %}
+              <span class="admin-muted">—</span>
+            {% endif %}
+          </td>
+        {% endfor %}
+        <td class="admin-table-actions">
+          {% if ct.has_media_manager %}
+            <a href="{{ url_for('admins.gallery_media', gallery_id=row.id) }}" class="admin-link">Médias</a>
+          {% endif %}
+          <a href="{{ url_for('admins.content_edit', content_key=ct.key, row_id=row.id) }}" class="admin-link">Modifier</a>
+          <form method="post" action="{{ url_for('admins.content_delete', content_key=ct.key, row_id=row.id) }}" class="admin-inline-form" data-confirm="Supprimer définitivement {{ ct.label_singular }} « {{ row.title or row.id }} » ?">
+            <button type="submit" class="admin-link admin-link-danger">Supprimer</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="{{ ct.list_columns|length + 1 }}" class="admin-empty">Aucun contenu pour l'instant.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

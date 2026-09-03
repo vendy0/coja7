@@ -1,6 +1,3 @@
--- 1. EXTENSION UUID
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
 -- WARNING: This schema is for context only and is not meant to be run.
 -- Table order and constraints may not be valid for execution.
 
@@ -30,7 +27,6 @@ CREATE TABLE public.events (
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
   hero_media_url text,
-  hero_media_type text,
   CONSTRAINT events_pkey PRIMARY KEY (id)
 );
 CREATE TABLE public.communications (
@@ -43,12 +39,13 @@ CREATE TABLE public.communications (
   content text,
   hero_media_type character varying CHECK (hero_media_type::text = ANY (ARRAY['image'::character varying, 'video'::character varying]::text[])),
   hero_media_url text,
-  pdf_url text,
+  download_url text,
   event_id uuid,
   published_at timestamp with time zone,
   created_at timestamp with time zone DEFAULT now(),
   federation text,
   hero_media_description text DEFAULT 'Illustration du communiqué'::text,
+  download_type text,
   CONSTRAINT communications_pkey PRIMARY KEY (id),
   CONSTRAINT communications_event_id_fkey FOREIGN KEY (event_id) REFERENCES public.events(id)
 );

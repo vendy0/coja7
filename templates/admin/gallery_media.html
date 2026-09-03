@@ -1,0 +1,48 @@
+{% extends "admin/base_admin.html" %}
+{% block page_title %}Médias — {{ gallery.title }}{% endblock %}
+{% block header_title %}Médias — {{ gallery.title }}{% endblock %}
+{% block content %}
+<a href="{{ url_for('admins.content_edit', content_key='galleries', row_id=gallery.id) }}" class="admin-link">← Retour à la galerie</a>
+
+<div class="admin-panel">
+  <h2>Ajouter des médias</h2>
+  <form method="post" enctype="multipart/form-data" class="admin-form admin-form-inline">
+    <div class="admin-field">
+      <label for="files">Fichiers (plusieurs sélections possibles)</label>
+      <input type="file" id="files" name="files" accept="image/*,video/*" multiple required>
+    </div>
+    <div class="admin-field">
+      <label for="type">Type</label>
+      <select id="type" name="type">
+        <option value="photo">Photo</option>
+        <option value="video">Vidéo</option>
+      </select>
+    </div>
+    <div class="admin-field">
+      <label for="credit">Crédit (optionnel)</label>
+      <input type="text" id="credit" name="credit">
+    </div>
+    <button type="submit" class="admin-btn admin-btn-primary">Envoyer</button>
+  </form>
+</div>
+
+<div class="admin-media-grid">
+  {% for item in media_items %}
+  <div class="admin-media-tile">
+    {% if item.type == 'video' %}
+      <video src="{{ item.media_url }}" controls></video>
+    {% else %}
+      <img src="{{ item.thumbnails_url or item.media_url }}" alt="">
+    {% endif %}
+    <div class="admin-media-tile-meta">
+      <span>{{ item.credit or '—' }}</span>
+      <form method="post" action="{{ url_for('admins.gallery_media_delete', gallery_id=gallery.id, media_id=item.id) }}" data-confirm="Supprimer ce média ?">
+        <button type="submit" class="admin-link admin-link-danger">Supprimer</button>
+      </form>
+    </div>
+  </div>
+  {% else %}
+  <p class="admin-empty">Aucun média dans cette galerie pour l'instant.</p>
+  {% endfor %}
+</div>
+{% endblock %}

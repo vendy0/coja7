@@ -174,27 +174,6 @@ def get_sermon_detail(sermon_id):
         .data
     )
 
-def get_all_events():
-    """Récupère tous les événements (utilisé pour construire la grille du calendrier)."""
-    return (
-        supabase.table("events")
-        .select("id, title, description, start_date, end_date, time_label, location, department, status")
-        .order("start_date")
-        .execute()
-        .data
-    )
-
-def get_event_detail(event_id):
-    """Récupère un événement par son UUID (page de détail /calendar/event/<id>)."""
-    return (
-        supabase.table("events")
-        .select("*")
-        .eq("id", event_id)
-        .single()
-        .execute()
-        .data
-    )
-
 def get_all_galleries(limit=12, offset=0):
     """Récupère les galeries (avec leurs médias associés pour compter photos/vidéos), paginées (limit/offset)."""
     response = (
@@ -238,3 +217,30 @@ def get_gallery_detail(gallery_id):
         gallery["media_items"] = media_items or []
         
     return gallery
+
+def get_events_for_grid(start_date, end_date):
+    """
+    Récupère uniquement les événements qui chevauchent la grille du calendrier affiché.
+    Évite de charger l'intégralité de l'historique de la base de données.
+    """
+    return (
+        supabase.table("events")
+        .select("id, title, description, start_date, end_date, time_label, location, department, status")
+        .gte("start_date", start_date.isoformat())
+        .lte("start_date", end_date.isoformat())
+        .order("start_date")
+        .execute()
+        .data
+    )
+
+
+def get_event_detail(event_id):
+    """Récupère un événement par son UUID (page de détail /calendar/event/<id>)."""
+    return (
+        supabase.table("events")
+        .select("*")
+        .eq("id", event_id)
+        .single()
+        .execute()
+        .data
+    )

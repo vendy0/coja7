@@ -450,7 +450,7 @@ nav a.active::before{ content:""; position:absolute; top:0; left:0; right:0; hei
 .featured h1{ font-family:'Source Serif 4', serif; font-weight:600; font-size:25px; line-height:1.22; margin:0 0 8px; color:var(--navy); }
 .featured p{ font-size:13.5px; color:var(--ink-soft); line-height:1.55; margin:0; }
 
-.fedchas{
+.federation{
   margin:15px 20px 22px;
   position:relative;
   border:1px solid var(--hairline);
@@ -461,10 +461,10 @@ nav a.active::before{ content:""; position:absolute; top:0; left:0; right:0; hei
   border-radius:6px;
   box-shadow:0 2px 8px rgba(0,0,0,0.03);
 }
-.fedchas .seal-watermark{ position:absolute; right:-26px; top:-26px; width:130px; height:130px; opacity:0.06; filter:grayscale(1) contrast(1.4); }
-.fedchas .ref{ font-family:'IBM Plex Mono', monospace; font-size:10px; color:var(--red); font-weight:500; letter-spacing:0.06em; margin-bottom:6px; position:relative; }
-.fedchas h3{ font-family:'Source Serif 4', serif; font-size:16.5px; font-weight:600; color:var(--navy); margin:0 0 6px; line-height:1.3; position:relative; }
-.fedchas .meta{ font-family:'IBM Plex Mono', monospace; font-size:10px; color:var(--ink-soft); position:relative; }
+.federation .seal-watermark{ position:absolute; right:-26px; top:-26px; width:130px; height:130px; opacity:0.06; filter:grayscale(1) contrast(1.4); }
+.federation .ref{ font-family:'IBM Plex Mono', monospace; font-size:10px; color:var(--red); font-weight:500; letter-spacing:0.06em; margin-bottom:6px; position:relative; }
+.federation h3{ font-family:'Source Serif 4', serif; font-size:16.5px; font-weight:600; color:var(--navy); margin:0 0 6px; line-height:1.3; position:relative; }
+.federation .meta{ font-family:'IBM Plex Mono', monospace; font-size:10px; color:var(--ink-soft); position:relative; }
 
 .row{ display:flex; gap:14px; padding:16px 20px; border-bottom:1px solid var(--hairline); }
 .row .thumb{ width:76px; height:76px; flex-shrink:0; background:linear-gradient(135deg, #DCE3EE 0%, #B8C5D6 100%); border-radius:6px; position:relative; }

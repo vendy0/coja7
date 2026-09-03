@@ -1,0 +1,69 @@
+{% extends "admin/base_admin.html" %}
+{% block page_title %}{{ 'Modifier' if row else 'Nouveau' }} — {{ ct.label }}{% endblock %}
+{% block header_title %}{{ 'Modifier' if row else 'Ajouter' }} — {{ ct.label }}{% endblock %}
+{% block content %}
+<form method="post" enctype="multipart/form-data" class="admin-form">
+  {% for field in ct.fields %}
+  <div class="admin-field admin-field-{{ field.type }}">
+    <label for="f-{{ field.name }}">{{ field.label }}{% if field.required %} <span class="admin-required">*</span>{% endif %}</label>
+    {% if field.help %}<p class="admin-field-help">{{ field.help }}</p>{% endif %}
+
+    {% if field.type == 'text' %}
+      <input type="text" id="f-{{ field.name }}" name="{{ field.name }}"
+             value="{{ (row.get(field.name) if row else '') or '' }}"
+             {{ 'required' if field.required }}>
+
+    {% elif field.type == 'textarea' %}
+      <textarea id="f-{{ field.name }}" name="{{ field.name }}" rows="4">{{ (row.get(field.name) if row else '') or '' }}</textarea>
+
+    {% elif field.type == 'richtext' %}
+      <div class="admin-rich-editor" id="editor-{{ field.name }}"></div>
+      <textarea id="f-{{ field.name }}" name="{{ field.name }}" class="admin-rich-source" data-editor-target hidden>{{ (row.get(field.name) if row else '') or '' }}</textarea>
+
+    {% elif field.type == 'datetime' %}
+      <input type="datetime-local" id="f-{{ field.name }}" name="{{ field.name }}"
+             value="{{ (row.get(field.name) if row else '') | admin_datetime_local }}"
+             {{ 'required' if field.required }}>
+
+    {% elif field.type == 'date' %}
+      <input type="date" id="f-{{ field.name }}" name="{{ field.name }}"
+             value="{{ (row.get(field.name) if row else '') or '' }}"
+             {{ 'required' if field.required }}>
+
+    {% elif field.type == 'select' %}
+      <select id="f-{{ field.name }}" name="{{ field.name }}">
+        {% set current = (row.get(field.name) if row else field.get('default')) %}
+        <option value="">—</option>
+        {% for opt in field.options %}
+          <option value="{{ opt }}" {{ 'selected' if opt == current }}>{{ opt }}</option>
+        {% endfor %}
+      </select>
+
+    {% elif field.type == 'relation' %}
+      {% set current = row.get(field.name) if row else '' %}
+      <select id="f-{{ field.name }}" name="{{ field.name }}">
+        <option value="">—</option>
+        {% for opt in relation_options.get(field.name, []) %}
+          <option value="{{ opt.id }}" {{ 'selected' if opt.id == current }}>{{ opt.label }}</option>
+        {% endfor %}
+      </select>
+
+    {% elif field.type == 'image' %}
+      {% set current_url = row.get(field.name) if row else '' %}
+      {% if current_url %}
+        <div class="admin-current-file">
+          <a href="{{ current_url }}" target="_blank">Fichier actuel ↗</a>
+        </div>
+      {% endif %}
+      <input type="file" id="f-{{ field.name }}" name="{{ field.name }}" accept="{{ field.get('accept', 'image/*') }}">
+      <p class="admin-field-help">{{ 'Laisser vide pour garder le fichier actuel.' if current_url else '' }}</p>
+    {% endif %}
+  </div>
+  {% endfor %}
+
+  <div class="admin-form-actions">
+    <a href="{{ url_for('admins.content_list', content_key=ct.key) }}" class="admin-btn admin-btn-ghost">Annuler</a>
+    <button type="submit" class="admin-btn admin-btn-primary">{{ 'Enregistrer' if row else 'Créer' }}</button>
+  </div>
+</form>
+{% endblock %}

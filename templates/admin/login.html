@@ -1,0 +1,33 @@
+{% extends "admin/base_admin.html" %}
+{% block page_title %}Connexion{% endblock %}
+{% block auth_content %}
+<div class="admin-auth-screen">
+  <form class="admin-auth-card" method="post">
+    <div class="admin-brand admin-brand-center">
+      <span class="admin-brand-mark">C7</span>
+      <span class="admin-brand-text">Admin</span>
+    </div>
+    <p class="admin-auth-sub">Connexion réservée à l'équipe COJA7</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="admin-flashes">
+          {% for category, message in messages %}
+            <div class="admin-flash admin-flash-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <label class="admin-field">
+      <span>Adresse e-mail</span>
+      <input type="email" name="email" value="{{ email or '' }}" required autofocus>
+    </label>
+    <label class="admin-field">
+      <span>Mot de passe</span>
+      <input type="password" name="password" required>
+    </label>
+    <button type="submit" class="admin-btn admin-btn-primary admin-btn-block">Se connecter</button>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "admin/base_admin.html" %}
+{% block page_title %}Tableau de bord{% endblock %}
+{% block header_title %}Tableau de bord{% endblock %}
+{% block content %}
+<div class="admin-grid">
+  <a href="{{ url_for('admins.content_list', content_key='events') }}" class="admin-stat-card">
+    <span class="admin-stat-value">{{ counts.events if counts.events is not none else '—' }}</span>
+    <span class="admin-stat-label">Événements</span>
+  </a>
+  <a href="{{ url_for('admins.content_list', content_key='communications') }}" class="admin-stat-card">
+    <span class="admin-stat-value">{{ counts.communications if counts.communications is not none else '—' }}</span>
+    <span class="admin-stat-label">Communications</span>
+  </a>
+  <a href="{{ url_for('admins.content_list', content_key='rubrics') }}" class="admin-stat-card">
+    <span class="admin-stat-value">{{ counts.rubrics if counts.rubrics is not none else '—' }}</span>
+    <span class="admin-stat-label">Rubriques vidéo</span>
+  </a>
+  <a href="{{ url_for('admins.content_list', content_key='sermons') }}" class="admin-stat-card">
+    <span class="admin-stat-value">{{ counts.sermons if counts.sermons is not none else '—' }}</span>
+    <span class="admin-stat-label">Sermons</span>
+  </a>
+  <a href="{{ url_for('admins.content_list', content_key='galleries') }}" class="admin-stat-card">
+    <span class="admin-stat-value">{{ counts.galleries if counts.galleries is not none else '—' }}</span>
+    <span class="admin-stat-label">Galeries</span>
+  </a>
+</div>
+
+<div class="admin-panel">
+  <h2>Actions rapides</h2>
+  <div class="admin-quicklinks">
+    <a href="{{ url_for('admins.content_new', content_key='events') }}" class="admin-btn">+ Nouvel événement</a>
+    <a href="{{ url_for('admins.content_new', content_key='communications') }}" class="admin-btn">+ Nouvelle communication</a>
+    <a href="{{ url_for('admins.content_new', content_key='rubrics') }}" class="admin-btn">+ Nouvelle rubrique</a>
+    <a href="{{ url_for('admins.content_new', content_key='sermons') }}" class="admin-btn">+ Nouveau sermon</a>
+    <a href="{{ url_for('admins.content_new', content_key='galleries') }}" class="admin-btn">+ Nouvelle galerie</a>
+    <a href="{{ url_for('admins.featured') }}" class="admin-btn admin-btn-ghost">Gérer la une</a>
+  </div>
+</div>
+{% endblock %}

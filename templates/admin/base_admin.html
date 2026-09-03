@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin COJA7 — {% block page_title %}{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/style.css') }}">
+{% block extra_head %}{% endblock %}
+</head>
+<body class="admin-body">
+
+{% if g.admin %}
+<div class="admin-shell">
+  <aside class="admin-sidebar">
+    <div class="admin-brand">
+      <span><img class="admin-brand-mark" src="{{ url_for('static', filename='img/logo.jpg') }}" alt="Logo COJA7"></span>
+      <span class="admin-brand-text">Admin</span>
+    </div>
+    <nav class="admin-nav">
+      <a href="{{ url_for('admins.dashboard') }}" class="{{ 'active' if request.endpoint == 'admins.dashboard' }}">Tableau de bord</a>
+      <div class="admin-nav-label">Contenu</div>
+      <a href="{{ url_for('admins.content_list', content_key='events') }}" class="{{ 'active' if request.view_args and request.view_args.get('content_key') == 'events' }}">Événements</a>
+      <a href="{{ url_for('admins.content_list', content_key='communications') }}" class="{{ 'active' if request.view_args and request.view_args.get('content_key') == 'communications' }}">Communications</a>
+      <a href="{{ url_for('admins.content_list', content_key='rubrics') }}" class="{{ 'active' if request.view_args and request.view_args.get('content_key') == 'rubrics' }}">Rubriques vidéo</a>
+      <a href="{{ url_for('admins.content_list', content_key='sermons') }}" class="{{ 'active' if request.view_args and request.view_args.get('content_key') == 'sermons' }}">Sermons</a>
+      <a href="{{ url_for('admins.content_list', content_key='galleries') }}" class="{{ 'active' if request.view_args and request.view_args.get('content_key') == 'galleries' }}">Galeries</a>
+      <a href="{{ url_for('admins.featured') }}" class="{{ 'active' if request.endpoint == 'admins.featured' }}">À la une</a>
+      {% if g.admin.role == 'super_admin' %}
+      <div class="admin-nav-label">Équipe</div>
+      <a href="{{ url_for('admins.team') }}" class="{{ 'active' if request.endpoint == 'admins.team' }}">Administrateurs</a>
+      {% endif %}
+    </nav>
+    <div class="admin-sidebar-footer">
+      <a href="{{ url_for('index') }}" target="_blank">Voir le site public ↗</a>
+    </div>
+  </aside>
+
+  <div class="admin-main">
+    <header class="admin-topbar">
+      <button type="button" class="admin-burger" id="admin-burger" aria-label="Menu">☰</button>
+      <h1 class="admin-page-title">{% block header_title %}{% endblock %}</h1>
+      <div class="admin-user">
+        <span class="admin-user-name">{{ g.admin.name }}</span>
+        <a href="{{ url_for('admins.logout') }}" class="admin-logout">Déconnexion</a>
+      </div>
+    </header>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="admin-flashes">
+          {% for category, message in messages %}
+            <div class="admin-flash admin-flash-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <main class="admin-content">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</div>
+{% else %}
+  {% block auth_content %}{% endblock %}
+{% endif %}
+
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.umd.js"></script>
+<script src="{{ url_for('static', filename='js/admin/editor.js') }}"></script>
+<script src="{{ url_for('static', filename='js/admin/admin.js') }}"></script>
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>

@@ -52,16 +52,6 @@
   {% endif %}
 </section>
 
-{% if federation %}
-<a class="federation" style="text-decoration:none;color:inherit;"
-   href="{{ url_for('communications.federation_detail', note_id=federation.data.id, federation=federation.data.department) }}">
-  <img class="seal-watermark" src="{{ url_for('static', filename='img/logo.jpg') }}" alt="Logo COJA7">
-  <div class="ref">{{ federation.data.federation | upper or "" }} · {{ federation.data.reference_number or "Note" }}</div>
-  <h3>{{ federation.data.title }}</h3>
-  <div class="meta">Publié le {{ federation.data.published_at | date_fr }} · {{ federation.data.department or "" }}</div>
-</a>
-{% endif %}
-
     <div class="section-label">
       <span class="title">Dernières publications</span>
     </div>
