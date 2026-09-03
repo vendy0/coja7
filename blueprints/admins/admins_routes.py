@@ -71,16 +71,16 @@ def dashboard():
 # ---------------------------------------------------------------------------
 # CRUD générique, piloté par admins_config.CONTENT_TYPES
 # ---------------------------------------------------------------------------
-
 def _parse_form(fields, form):
     """Convertit un formulaire HTML en payload prêt pour Supabase."""
     payload = {}
+
     for field in fields:
         name = field["name"]
         ftype = field["type"]
 
-        if ftype == "image":
-            continue  # géré séparément (upload de fichier)
+        if ftype in ("image", "audio"):
+            continue
 
         if ftype == "relation":
             value = form.get(name) or None
@@ -88,14 +88,19 @@ def _parse_form(fields, form):
             continue
 
         value = form.get(name, "")
-        if ftype == "datetime" and value:
-            # <input type="datetime-local"> -> ISO avec secondes
+
+        if name == "hero_media_type":
+            payload[name] = value or None
+
+        elif ftype == "datetime" and value:
             try:
                 payload[name] = datetime.fromisoformat(value).isoformat()
             except ValueError:
                 payload[name] = None
+
         elif value == "" and ftype in ("date", "datetime"):
             payload[name] = None
+
         else:
             payload[name] = value
 
@@ -123,11 +128,18 @@ def content_new(content_key):
 
     if request.method == "POST":
         payload = _parse_form(ct["fields"], request.form)
+        # Dans content_new et content_edit :
         for field in ct["fields"]:
+            file_obj = request.files.get(field["name"])
             if field["type"] == "image":
-                uploaded = db_ops.upload_file(g.db, request.files.get(field["name"]), folder=ct["table"])
+                uploaded = db_ops.upload_file(g.db, file_obj, folder=ct["table"])
                 if uploaded:
                     payload[field["name"]] = uploaded
+            elif field["type"] == "audio":
+                uploaded = db_ops.upload_audio_to_b2(g.db, file_obj, folder=ct["table"])
+                if uploaded:
+                    payload[field["name"]] = uploaded
+
         try:
             db_ops.create_row(g.db, ct["table"], payload)
             flash(f"{ct['label_singular'].capitalize()} créé·e avec succès.", "success")
@@ -136,7 +148,6 @@ def content_new(content_key):
             flash(f"Erreur lors de la création : {e}", "error")
 
     return render_template("admin/form.html", ct=ct, row=None, relation_options=relation_options)
-
 
 @bp_admins.route("/<content_key>/<row_id>/edit", methods=["GET", "POST"])
 @login_required
@@ -156,11 +167,17 @@ def content_edit(content_key, row_id):
         for field in ct["fields"]:
             if field["type"] == "image":
                 file_obj = request.files.get(field["name"])
+                # --- CODE MODIFIÉ ICI ---
                 if file_obj and file_obj.filename:
-                    uploaded = db_ops.upload_file(g.db, file_obj, folder=ct["table"])
-                    if uploaded:
-                        payload[field["name"]] = uploaded
-                # sinon : on garde l'URL existante, on ne l'écrase pas
+                    if field["type"] == "image":
+                        uploaded = db_ops.upload_file(g.db, file_obj, folder=ct["table"])
+                        if uploaded:
+                            payload[field["name"]] = uploaded
+                    elif field["type"] == "audio":
+                        uploaded = db_ops.upload_audio_to_b2(g.db, file_obj, folder=ct["table"])
+                        if uploaded:
+                            payload[field["name"]] = uploaded
+            # sinon : on garde l'URL existante, on ne l'écrase pas
         try:
             db_ops.update_row(g.db, ct["table"], row_id, payload)
             flash(f"{ct['label_singular'].capitalize()} mis·e à jour.", "success")

@@ -9,7 +9,8 @@
 11. Apprendre le MarkDown
 12. Le Téléchargement des médias restent encore à être résolu
 13. Les outils SEO
-14. 
+14. La gestion des erreurs supabase
+15. La communication avec l'équipe
 
 Admin
 1. Clique pour fermer la navbar

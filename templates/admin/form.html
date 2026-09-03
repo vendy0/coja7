@@ -18,7 +18,7 @@
 
     {% elif field.type == 'richtext' %}
       <div class="admin-rich-editor" id="editor-{{ field.name }}"></div>
-      <textarea id="f-{{ field.name }}" name="{{ field.name }}" class="admin-rich-source" data-editor-target hidden>{{ (row.get(field.name) if row else '') or '' }}</textarea>
+      <textarea id="f-{{ field.name }}" name="{{ field.name }}" class="admin-rich-source" data-editor-target>{{ (row.get(field.name) if row else '') or '' }}</textarea>
 
     {% elif field.type == 'datetime' %}
       <input type="datetime-local" id="f-{{ field.name }}" name="{{ field.name }}"
@@ -48,16 +48,17 @@
         {% endfor %}
       </select>
 
-    {% elif field.type == 'image' %}
+    {% elif field.type in ['image', 'audio'] %}
       {% set current_url = row.get(field.name) if row else '' %}
       {% if current_url %}
         <div class="admin-current-file">
           <a href="{{ current_url }}" target="_blank">Fichier actuel ↗</a>
         </div>
       {% endif %}
-      <input type="file" id="f-{{ field.name }}" name="{{ field.name }}" accept="{{ field.get('accept', 'image/*') }}">
+      <input type="file" id="f-{{ field.name }}" name="{{ field.name }}" accept="{{ field.get('accept', '*/*') }}">
       <p class="admin-field-help">{{ 'Laisser vide pour garder le fichier actuel.' if current_url else '' }}</p>
     {% endif %}
+
   </div>
   {% endfor %}
 

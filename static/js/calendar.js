@@ -72,8 +72,8 @@
       var html = "";
       data.selected_events.forEach(function (e) {
         html += '<a class="event-card" href="' + eventUrl(e.id) + '">';
-        html += '<div class="time">' + escapeHtml(e.time_label || "Toute la journée") + "</div>";
         html += '<div class="event-body">';
+        html += '<div class="time bottom">' + escapeHtml(e.time_label || "Toute la journée") + "</div>";
         html += '<div class="title-row"><div class="title">' + escapeHtml(e.title) + "</div>" + statusTag(e.status) + "</div>";
         if (e.description) html += '<p class="description">' + escapeHtml(e.description) + "</p>";
         if (e.location) {

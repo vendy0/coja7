@@ -1019,7 +1019,8 @@ nav a.active::before{ content:""; position:absolute; top:0; left:0; right:0; hei
   cursor:pointer;
 }
 .event-card:hover{ background:var(--paper-dim); }
-.event-card .time{ font-family:'IBM Plex Mono', monospace; font-size:9.5px; color:var(--blue); flex-shrink:0; width:78px; padding-top:3px; }
+.event-card .time{ font-family:'IBM Plex Mono', monospace; font-size:9.5px; color:var(--blue); flex-shrink:0; padding-top:3px; }
+.event-card .time.bottom{ margin-bottom: 5px; }
 .event-card .event-body{ flex:1; min-width:0; }
 .event-card .title-row{ display:flex; align-items:baseline; justify-content:space-between; gap:8px; margin:0 0 6px; }
 .event-card .title{ font-family:'Source Serif 4', serif; font-size:15px; font-weight:600; color:var(--navy); margin:0; }

@@ -109,6 +109,7 @@ CONTENT_TYPES = {
         ],
     },
     "sermons": {
+        # --- Dans admins_config.py, sous "sermons" ---
         "label": "Sermons",
         "label_singular": "un sermon",
         "table": "sermons",
@@ -119,6 +120,7 @@ CONTENT_TYPES = {
             ("reference", "Référence"),
             ("published_at", "Publié le"),
         ],
+        
         "fields": [
             {"name": "title", "label": "Titre", "type": "text", "required": True},
             {"name": "subtitle", "label": "Sous-titre", "type": "text"},
@@ -130,13 +132,19 @@ CONTENT_TYPES = {
                 "options": ["image", "video"],
             },
             {"name": "hero_media_url", "label": "Média principal", "type": "image"},
-            {"name": "audio_url", "label": "Fichier audio", "type": "image", "accept": "audio/*"},
             {"name": "pdf_url", "label": "Fichier PDF", "type": "image", "accept": "application/pdf"},
             {
                 "name": "event_id", "label": "Événement lié", "type": "relation",
                 "relation_table": "events", "relation_label": "title",
             },
             {"name": "published_at", "label": "Date de publication", "type": "datetime"},
+            {
+                "name": "audio_url",
+                "label": "Fichier audio",
+                "type": "audio",
+                "accept": "audio/*",
+                "storage": "b2"
+            },
         ],
     },
     "galleries": {

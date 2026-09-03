@@ -31,6 +31,58 @@ s3_client = boto3.client(
     config=Config(signature_version="s3v4")
 )
 
+# Configuration Backblaze B2
+B2_KEY_ID = os.environ.get("B2_KEY_ID")
+B2_APPLICATION_KEY = os.environ.get("B2_APPLICATION_KEY")
+B2_BUCKET_NAME = os.environ.get("B2_BUCKET_NAME", "coja7-audios")
+B2_ENDPOINT = os.environ.get("B2_ENDPOINT")
+B2_PUBLIC_URL = os.environ.get("B2_PUBLIC_URL")
+
+# Client S3 compatible Backblaze B2
+b2_client = boto3.client(
+    "s3",
+    endpoint_url=B2_ENDPOINT,
+    aws_access_key_id=B2_KEY_ID,
+    aws_secret_access_key=B2_APPLICATION_KEY,
+    config=Config(signature_version="s3v4")
+)
+
+
+def upload_audio_to_b2(db, file_storage, folder="sermons"):
+    """Envoie un fichier audio vers Backblaze B2 (bucket public) avec téléchargement forcé."""
+    if not file_storage or not file_storage.filename:
+        return None
+
+    ext = file_storage.filename.rsplit(".", 1)[-1].lower() if "." in file_storage.filename else "mp3"
+    filename_only = os.path.basename(file_storage.filename)
+    path = f"{folder}/{uuid.uuid4().hex}.{ext}"
+    content_type = file_storage.mimetype or mimetypes.guess_type(file_storage.filename)[0] or "audio/mpeg"
+
+    b2_client.upload_fileobj(
+        file_storage,
+        B2_BUCKET_NAME,
+        path,
+        ExtraArgs={
+            "ContentType": content_type,
+            "ContentDisposition": f'attachment; filename="{filename_only}"'
+        }
+    )
+
+    # URL permanente et accessible par tous
+    return f"{B2_PUBLIC_URL.rstrip('/')}/{path}"
+
+
+
+def delete_audio_by_url(db, url):
+    """Supprime un fichier audio du bucket B2 à partir de son URL publique."""
+    if not url or not B2_PUBLIC_URL or B2_PUBLIC_URL not in url:
+        return
+    try:
+        path = url.replace(f"{B2_PUBLIC_URL.rstrip('/')}/", "")
+        b2_client.delete_object(Bucket=B2_BUCKET_NAME, Key=path)
+    except Exception as e:
+        print(f"Erreur lors de la suppression sur Backblaze B2: {e}")
+
 
 def list_rows(db, table, order_by=None, order_desc=False, limit=100):
     query = db.table(table).select("*")
