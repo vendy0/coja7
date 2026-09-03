@@ -1,13 +1,22 @@
-// Transforme chaque <div class="admin-rich-editor"> en éditeur Quill
-// (gras, italique, titres, listes...) et garde une <textarea> cachée
-// synchronisée avec le HTML produit, pour un envoi classique en <form>.
 document.addEventListener("DOMContentLoaded", function () {
-  if (typeof Quill === "undefined") return;
+  console.log("editor.js chargé");
+  console.log("Quill =", typeof Quill);
+
+  if (typeof Quill === "undefined") {
+    console.error("ERREUR : Quill n'est pas disponible.");
+    return;
+  }
 
   document.querySelectorAll(".admin-rich-editor").forEach(function (container) {
     const fieldName = container.id.replace("editor-", "");
     const source = document.getElementById("f-" + fieldName);
-    if (!source) return;
+
+    console.log("Initialisation Quill :", fieldName);
+
+    if (!source) {
+      console.error("Textarea introuvable :", "f-" + fieldName);
+      return;
+    }
 
     const quill = new Quill(container, {
       theme: "snow",
@@ -18,27 +27,29 @@ document.addEventListener("DOMContentLoaded", function () {
           ["bold", "italic", "underline"],
           [{ list: "ordered" }, { list: "bullet" }],
           ["link", "blockquote"],
-          ["clean"],
-        ],
-      },
+          ["clean"]
+        ]
+      }
     });
 
-    // Pré-remplissage à partir du contenu existant (édition)
+    // Contenu existant
     if (source.value.trim()) {
       quill.clipboard.dangerouslyPasteHTML(source.value);
     }
 
-    // Le formulaire soumet la textarea cachée : on la garde à jour à chaque frappe
-    quill.on("text-change", function () {
+    // La textarea reste synchronisée avec Quill
+    function syncEditor() {
       source.value = quill.root.innerHTML;
-    });
+    }
 
-    // Sécurité supplémentaire au moment de la soumission
+    syncEditor();
+
+    quill.on("text-change", syncEditor);
+
     const form = source.closest("form");
+
     if (form) {
-      form.addEventListener("submit", function () {
-        source.value = quill.root.innerHTML;
-      });
+      form.addEventListener("submit", syncEditor);
     }
   });
 });

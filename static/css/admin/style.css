@@ -285,6 +285,24 @@ a { color: inherit; text-decoration: none; }
 }
 .admin-auth-sub{ text-align: center; color: var(--a-text-dim); font-size: 0.85rem; margin: -6px 0 6px; }
 
+.admin-rich-source[hidden] {
+  display: none !important;
+}
+
+.admin-rich-editor {
+  min-height: 160px;
+}
+
+.admin-rich-editor .ql-editor {
+  min-height: 120px;
+  color: var(--a-text);
+}
+
+.admin-rich-editor .ql-editor.ql-blank::before {
+  color: var(--a-text-dim);
+  font-style: normal;
+}
+
 /* --- Gallery media manager --- */
 .admin-media-grid{
   display: grid;
