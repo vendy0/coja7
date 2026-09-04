@@ -101,9 +101,11 @@ CONTENT_TYPES = {
             {"name": "speaker", "label": "Intervenant", "type": "text"},
             {"name": "description", "label": "Description", "type": "richtext"},
             {
-                "name": "youtube_id", "label": "ID YouTube (ex: dQw4w9WgXcQ)", "type": "text",
+                "name": "youtube_id",
+                "label": "Lien YouTube",
+                "type": "text",
                 "required": True,
-                "help": "La partie après ?v= dans l'URL YouTube.",
+                "help": "Collez le lien complet de la vidéo YouTube.",
             },
             {"name": "published_at", "label": "Date de publication", "type": "datetime"},
         ],

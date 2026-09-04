@@ -14,6 +14,7 @@ fonctionnent telles quelles (elles vérifient `auth.uid()`).
   anonyme pour le reste du site public.
 """
 import os
+import time
 from functools import wraps
 
 from flask import session, redirect, url_for, request, flash, g
@@ -41,6 +42,24 @@ def build_scoped_client(access_token: str, refresh_token: str = None):
     except Exception:
         pass
     return client
+
+
+def _refresh_session():
+    """Rafraîchit le token d'accès avec le refresh_token stocké en session.
+    Retourne True si le rafraîchissement a réussi."""
+    refresh_token = session.get("refresh_token")
+    if not refresh_token:
+        return False
+    try:
+        auth_res = public_supabase.auth.refresh_session(refresh_token)
+    except Exception:
+        return False
+    if not auth_res or not auth_res.session:
+        return False
+    session["access_token"] = auth_res.session.access_token
+    session["refresh_token"] = auth_res.session.refresh_token
+    session["expires_at"] = auth_res.session.expires_at
+    return True
 
 
 def login_admin(email: str, password: str):
@@ -81,6 +100,7 @@ def login_admin(email: str, password: str):
     session["admin_avatar"] = admin.get("avatar_url")
     session["access_token"] = access_token
     session["refresh_token"] = refresh_token
+    session["expires_at"] = auth_res.session.expires_at
     session.permanent = True
 
     return admin, None
@@ -111,8 +131,58 @@ def login_required(view):
         if "admin_id" not in session:
             flash("Connecte-toi pour accéder à l'administration.", "error")
             return redirect(url_for("admins.login", next=request.path))
-        # Client Supabase scopé sur l'admin connecté, dispo pour toute la requête
+
+        # Rafraîchit le token avant qu'il expire (durée de vie Supabase ~1h).
+        # Couvre aussi les sessions ouvertes avant ce correctif (pas
+        # d'"expires_at" en session) en tentant un refresh au premier appel
+        # raté plus bas.
+        expires_at = session.get("expires_at")
+        if expires_at and time.time() >= expires_at - 60:
+            if not _refresh_session():
+                session.clear()
+                flash("Ta session a expiré, reconnecte-toi.", "error")
+                return redirect(url_for("admins.login", next=request.path))
+
         g.db = build_scoped_client(session["access_token"], session.get("refresh_token"))
+
+        # Revalide le compte à chaque requête (actif ? rôle toujours le
+        # même ?) — protège aussi contre le cas où on te désactive pendant
+        # que tu es déjà connecté : tu ne restes pas connecté à agir.
+        try:
+            row = (
+                g.db.table("admins")
+                .select("id, first_name, last_name, role, is_active, avatar_url")
+                .eq("id", session["admin_id"])
+                .execute()
+                .data
+            )
+        except Exception:
+            # Le token a pu expirer entre-temps (session ouverte avant ce
+            # correctif) : un seul essai de rafraîchissement puis on relit.
+            row = None
+            if _refresh_session():
+                g.db = build_scoped_client(session["access_token"], session.get("refresh_token"))
+                try:
+                    row = (
+                        g.db.table("admins")
+                        .select("id, first_name, last_name, role, is_active, avatar_url")
+                        .eq("id", session["admin_id"])
+                        .execute()
+                        .data
+                    )
+                except Exception:
+                    row = None
+
+        if not row or not row[0].get("is_active", False):
+            session.clear()
+            flash("Ce compte n'a plus accès à l'administration.", "error")
+            return redirect(url_for("admins.login"))
+
+        admin = row[0]
+        session["admin_name"] = f"{admin['first_name']} {admin['last_name']}"
+        session["admin_role"] = admin["role"]
+        session["admin_avatar"] = admin.get("avatar_url")
+
         g.admin = current_admin()
         return view(*args, **kwargs)
     return wrapped

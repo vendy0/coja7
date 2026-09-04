@@ -3,7 +3,7 @@ from datetime import datetime
 from flask import (
     Blueprint, render_template, request, redirect, url_for, flash, g, abort, jsonify
 )
-
+import re
 from .admins_auth import login_admin, logout_admin, login_required, super_admin_required
 from .admins_config import CONTENT_TYPES, get_content_type
 from . import admins_db as db_ops
@@ -67,10 +67,34 @@ def dashboard():
         content_types=CONTENT_TYPES,
     )
 
-
 # ---------------------------------------------------------------------------
 # CRUD générique, piloté par admins_config.CONTENT_TYPES
 # ---------------------------------------------------------------------------
+def _extract_youtube_id(value):
+    """Extrait l'ID d'une vidéo YouTube depuis une URL ou retourne l'ID tel quel."""
+    if not value:
+        return None
+
+    value = value.strip()
+
+    # Déjà un ID YouTube
+    if re.fullmatch(r"[A-Za-z0-9_-]{11}", value):
+        return value
+
+    patterns = [
+        r"(?:youtube\.com/watch\?v=)([A-Za-z0-9_-]{11})",
+        r"(?:youtu\.be/)([A-Za-z0-9_-]{11})",
+        r"(?:youtube\.com/embed/)([A-Za-z0-9_-]{11})",
+        r"(?:youtube\.com/shorts/)([A-Za-z0-9_-]{11})",
+    ]
+
+    for pattern in patterns:
+        match = re.search(pattern, value)
+        if match:
+            return match.group(1)
+
+    return None
+
 def _parse_form(fields, form):
     """Convertit un formulaire HTML en payload prêt pour Supabase."""
     payload = {}
@@ -88,6 +112,9 @@ def _parse_form(fields, form):
             continue
 
         value = form.get(name, "")
+        if name == "youtube_id":
+            payload[name] = _extract_youtube_id(value)
+            continue        
 
         if name == "hero_media_type":
             payload[name] = value or None

@@ -1,0 +1,50 @@
+/* Mode plein écran de l'éditeur riche (bouton "fullscreen" dans editor.js).
+   Fichier séparé exprès : à fusionner dans style.css quand tu referas la
+   feuille de style admin, ou à garder tel quel en attendant. Les couleurs
+   utilisent tes variables --a-* si elles existent, avec un repli neutre
+   sinon, pour ne dépendre de rien d'autre dans ton CSS actuel. */
+
+.admin-rich-wrap.is-fullscreen{
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  display: flex;
+  flex-direction: column;
+  background: var(--a-panel, #1E293B);
+  border-radius: 0;
+  border: none;
+  padding: 0;
+}
+
+.admin-rich-wrap.is-fullscreen .ql-toolbar{
+  flex-shrink: 0;
+}
+
+.admin-rich-wrap.is-fullscreen .admin-rich-editor{
+  flex: 1;
+  min-height: 0;
+}
+
+.admin-rich-wrap.is-fullscreen .ql-container{
+  height: 100%;
+}
+
+.admin-rich-wrap.is-fullscreen .ql-editor{
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 28px 24px 60px;
+}
+
+/* Empêche la page de défiler derrière l'éditeur en plein écran */
+body.admin-editor-lock-scroll{
+  overflow: hidden;
+}
+
+/* Bouton plein écran mis en évidence quand actif */
+.ql-toolbar .ql-fullscreen.ql-active{
+  color: var(--a-accent, #6366F1);
+}
+.ql-toolbar .ql-fullscreen.ql-active svg,
+.ql-toolbar .ql-fullscreen.ql-active polyline{
+  stroke: var(--a-accent, #6366F1);
+}

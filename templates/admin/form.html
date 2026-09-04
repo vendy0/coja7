@@ -9,16 +9,25 @@
     {% if field.help %}<p class="admin-field-help">{{ field.help }}</p>{% endif %}
 
     {% if field.type == 'text' %}
-      <input type="text" id="f-{{ field.name }}" name="{{ field.name }}"
-             value="{{ (row.get(field.name) if row else '') or '' }}"
-             {{ 'required' if field.required }}>
+        {% if field.name == 'youtube_id' %}
+          <input type="text" id="f-{{ field.name }}" name="{{ field.name }}"
+                 value="{{ 'https://youtu.be/' ~ row.get(field.name) if row and row.get(field.name) else '' }}"
+                 {{ 'required' if field.required }}>
+        {% else %}
+          <input type="text" id="f-{{ field.name }}" name="{{ field.name }}"
+                 value="{{ (row.get(field.name) if row else '') or '' }}"
+                 {{ 'required' if field.required }}>
+        {% endif %}
 
     {% elif field.type == 'textarea' %}
       <textarea id="f-{{ field.name }}" name="{{ field.name }}" rows="4">{{ (row.get(field.name) if row else '') or '' }}</textarea>
 
     {% elif field.type == 'richtext' %}
-      <div class="admin-rich-editor" id="editor-{{ field.name }}"></div>
-      <textarea id="f-{{ field.name }}" name="{{ field.name }}" class="admin-rich-source" data-editor-target hidden>{{ (row.get(field.name) if row else '') or '' }}</textarea>
+      <div class="admin-rich-wrap" id="wrap-{{ field.name }}">
+        <div class="admin-rich-editor" id="editor-{{ field.name }}"></div>
+      </div>
+      <textarea id="f-{{ field.name }}" name="{{ field.name }}" class="admin-rich-source" data-editor-target
+                placeholder="{{ field.get('placeholder', 'Écris ici…') }}" rows="8">{{ (row.get(field.name) if row else '') or '' }}</textarea>
 
     {% elif field.type == 'datetime' %}
       <input type="datetime-local" id="f-{{ field.name }}" name="{{ field.name }}"

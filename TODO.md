@@ -1,6 +1,6 @@
 
 3. Les pdf 
-4. Le stockage (Blackblase ppur audios et ImageKot pour images)
+4. Le stockage (Cloudflare Image transformations)
 5. Les search bars (Médias, Rubriques, Sermons)
 7. Le petit bleu au clic
 8. Téléchargement des médias et gallerie
@@ -14,6 +14,9 @@
 
 Admin
 1. Clique pour fermer la navbar
+16. Au lieu d'un select passer à un champ text avec propositions
+17. De meme pour les categories dans la partie rubrics
+17. Charger un pdf dans les communications (Les compresser d'abord)
 
 
   <!--
