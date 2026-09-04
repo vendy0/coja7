@@ -11,12 +11,17 @@
 13. Les outils SEO
 14. La gestion des erreurs supabase
 15. La communication avec l'équipe
+16. Mettre le liens de la gallery correspondante dans un eveneemnt
+17. 
 
 Admin
 1. Clique pour fermer la navbar
 16. Au lieu d'un select passer à un champ text avec propositions
 17. De meme pour les categories dans la partie rubrics
-17. Charger un pdf dans les communications (Les compresser d'abord)
+17. Charger un pdf dans les communications au lieu de son lien. Ça va dans le bucket R2 (Les compresser d'abord)
+18. Vérifier si y a pas déjà une image dans R2 avant de l'ajouter à nouveau
+20. Ajouter des médias dans la gallery ça prend du temps  Et si la connexion se coupe.
+21. Avoir les images thumbnails pour les vidéos pour pouvoir les afficher dans la galler.
 
 
   <!--

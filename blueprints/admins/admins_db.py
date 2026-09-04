@@ -21,9 +21,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Ligne temporaire pour vérifier le chargement (à supprimer en production !)
-print(f"DEBUG B2_KEY_ID: '{os.environ.get('B2_KEY_ID')}'")
-
 # Config S3 commune : le réseau mobile (Termux) coupe parfois la connexion
 # en plein transfert ("Connection was closed before we received a valid
 # response"). On mise sur des timeouts plus généreux + plusieurs tentatives

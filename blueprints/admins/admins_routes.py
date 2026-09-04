@@ -253,7 +253,7 @@ def gallery_media(gallery_id):
     if request.method == "POST":
         files = request.files.getlist("files")
         media_type = request.form.get("type", "photo")
-        credit = request.form.get("credit", "")
+        credit = request.form.get("credit", "COJA7")
         existing = g.db.table("media_items").select("display_order").eq("gallery_id", gallery_id).execute().data or []
         next_order = (max((m["display_order"] or 0) for m in existing) + 1) if existing else 0
 
