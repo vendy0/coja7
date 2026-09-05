@@ -8,14 +8,22 @@ sans toucher aux routes ni aux templates.
 
 Types de champ supportés par form.html :
   - text        : <input type="text">
+  - text_suggest: <input type="text"> avec suggestions (valeurs déjà
+                  utilisées dans la colonne) mais champ libre — pas de
+                  liste figée, contrairement à "relation"
   - textarea    : <textarea> simple (pas d'éditeur riche)
   - richtext    : éditeur Quill (voir static/js/admin/editor.js)
   - datetime    : <input type="datetime-local">
   - date        : <input type="date">
   - select      : <select> à partir de "options"
-  - image       : upload vers Supabase Storage (remplace l'URL existante)
-  - relation    : <select> peuplé dynamiquement depuis une autre table
-                  (voir "relation_table" / "relation_label")
+  - image       : upload vers Cloudflare R2
+  - audio       : upload vers Backblaze B2 (par blocs, voir admins_db.py)
+  - pdf         : upload vers Cloudflare R2, compressé avant envoi
+  - relation    : champ texte avec suggestions dont la sélection doit
+                  correspondre à une ligne existante d'une autre table
+                  (voir "relation_table" / "relation_label") — au-delà
+                  d'une simple liste déroulante pour rester utilisable
+                  quand il y a beaucoup d'options
 """
 
 CONTENT_TYPES = {
@@ -75,7 +83,7 @@ CONTENT_TYPES = {
             },
             {"name": "hero_media_url", "label": "Média principal", "type": "image"},
             {"name": "hero_media_description", "label": "Légende du média", "type": "text"},
-            {"name": "download_url", "label": "Lien de téléchargement (PDF, etc.)", "type": "text"},
+            {"name": "download_url", "label": "Document à télécharger (PDF)", "type": "pdf"},
             {"name": "download_type", "label": "Type de téléchargement (ex: PDF)", "type": "text"},
             {
                 "name": "event_id", "label": "Événement lié", "type": "relation",
@@ -97,7 +105,7 @@ CONTENT_TYPES = {
         ],
         "fields": [
             {"name": "title", "label": "Titre", "type": "text", "required": True},
-            {"name": "category", "label": "Catégorie", "type": "text"},
+            {"name": "category", "label": "Catégorie", "type": "text_suggest"},
             {"name": "speaker", "label": "Intervenant", "type": "text"},
             {"name": "description", "label": "Description", "type": "richtext"},
             {
@@ -134,7 +142,7 @@ CONTENT_TYPES = {
                 "options": ["image", "video"],
             },
             {"name": "hero_media_url", "label": "Média principal", "type": "image"},
-            {"name": "pdf_url", "label": "Fichier PDF", "type": "image", "accept": "application/pdf"},
+            {"name": "pdf_url", "label": "Fichier PDF", "type": "pdf"},
             {
                 "name": "event_id", "label": "Événement lié", "type": "relation",
                 "relation_table": "events", "relation_label": "title",

@@ -1,0 +1,24 @@
+/* Fond assombri derrière le menu latéral sur mobile, pour le fermer en
+   cliquant en dehors. Invisible et non cliquable tant que le menu est
+   fermé (pointer-events: none), pour ne jamais gêner le reste de la page. */
+.admin-nav-backdrop{
+  position: fixed;
+  inset: 0;
+  z-index: 90; /* sous .admin-sidebar (voir ton CSS, z-index généralement 100+) */
+  background: rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.admin-nav-backdrop.visible{
+  opacity: 1;
+  pointer-events: auto;
+}
+@media (min-width: 781px){
+  /* Le menu reste toujours visible en desktop : jamais de fond assombri */
+  .admin-nav-backdrop{ display: none; }
+}
+
+body.admin-nav-lock-scroll{
+  overflow: hidden;
+}

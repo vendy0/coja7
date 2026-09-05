@@ -8,12 +8,15 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/style.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/editor-fullscreen.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/admin-nav.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/admin-uploads.css') }}">
 {% block extra_head %}{% endblock %}
 </head>
 <body class="admin-body">
 
 {% if g.admin %}
 <div class="admin-shell">
+  <div class="admin-nav-backdrop" id="admin-nav-backdrop"></div>
   <aside class="admin-sidebar">
     <div class="admin-brand">
       <span><img class="admin-brand-mark" src="{{ url_for('static', filename='img/logo.jpg') }}" alt="Logo COJA7"></span>
@@ -69,6 +72,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.umd.js"></script>
 <script src="{{ url_for('static', filename='js/admin/editor.js') }}"></script>
+<script src="{{ url_for('static', filename='js/admin/admin-file-upload.js') }}"></script>
 <script src="{{ url_for('static', filename='js/admin/admin.js') }}"></script>
 {% block extra_scripts %}{% endblock %}
 </body>

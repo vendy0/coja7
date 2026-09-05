@@ -9,18 +9,24 @@
     {% if field.help %}<p class="admin-field-help">{{ field.help }}</p>{% endif %}
 
     {% if field.type == 'text' %}
-        {% if field.name == 'youtube_id' %}
-          <input type="text" id="f-{{ field.name }}" name="{{ field.name }}"
-                 value="{{ 'https://youtu.be/' ~ row.get(field.name) if row and row.get(field.name) else '' }}"
-                 {{ 'required' if field.required }}>
-        {% else %}
-          <input type="text" id="f-{{ field.name }}" name="{{ field.name }}"
-                 value="{{ (row.get(field.name) if row else '') or '' }}"
-                 {{ 'required' if field.required }}>
-        {% endif %}
+      <input type="text" id="f-{{ field.name }}" name="{{ field.name }}"
+             value="{{ (row.get(field.name) if row else '') or '' }}"
+             placeholder="{{ field.get('placeholder', '') }}"
+             {{ 'required' if field.required }}>
+
+    {% elif field.type == 'text_suggest' %}
+      <input type="text" id="f-{{ field.name }}" name="{{ field.name }}" list="dl-{{ field.name }}"
+             value="{{ (row.get(field.name) if row else '') or '' }}" autocomplete="off"
+             placeholder="{{ field.get('placeholder', 'Écris ou choisis dans les suggestions…') }}">
+      <datalist id="dl-{{ field.name }}">
+        {% for val in suggestion_options.get(field.name, []) %}
+          <option value="{{ val }}"></option>
+        {% endfor %}
+      </datalist>
 
     {% elif field.type == 'textarea' %}
-      <textarea id="f-{{ field.name }}" name="{{ field.name }}" rows="4">{{ (row.get(field.name) if row else '') or '' }}</textarea>
+      <textarea id="f-{{ field.name }}" name="{{ field.name }}" rows="4"
+                placeholder="{{ field.get('placeholder', '') }}">{{ (row.get(field.name) if row else '') or '' }}</textarea>
 
     {% elif field.type == 'richtext' %}
       <div class="admin-rich-wrap" id="wrap-{{ field.name }}">
@@ -49,22 +55,37 @@
       </select>
 
     {% elif field.type == 'relation' %}
-      {% set current = row.get(field.name) if row else '' %}
-      <select id="f-{{ field.name }}" name="{{ field.name }}">
-        <option value="">—</option>
+      {% set current_id = row.get(field.name) if row else '' %}
+      {% set current_opt = (relation_options.get(field.name, []) | selectattr('id', 'equalto', current_id) | list | first) %}
+      <input type="text" id="f-{{ field.name }}-label" list="dl-{{ field.name }}" autocomplete="off"
+             value="{{ current_opt.label if current_opt else '' }}"
+             data-relation-hidden="f-{{ field.name }}"
+             placeholder="{{ field.get('placeholder', 'Tape pour chercher…') }}">
+      <datalist id="dl-{{ field.name }}">
         {% for opt in relation_options.get(field.name, []) %}
-          <option value="{{ opt.id }}" {{ 'selected' if opt.id == current }}>{{ opt.label }}</option>
+          <option data-id="{{ opt.id }}" value="{{ opt.label }}"></option>
         {% endfor %}
-      </select>
+      </datalist>
+      <input type="hidden" id="f-{{ field.name }}" name="{{ field.name }}" value="{{ current_id or '' }}">
+      <p class="admin-field-help">Tape pour chercher parmi les résultats existants — laisse vide pour ne rien lier.</p>
 
-    {% elif field.type in ['image', 'audio'] %}
+    {% elif field.type in ['image', 'audio', 'pdf'] %}
       {% set current_url = row.get(field.name) if row else '' %}
+      {% set default_accept = {'image': 'image/*', 'audio': 'audio/*', 'pdf': 'application/pdf'}[field.type] %}
       {% if current_url %}
         <div class="admin-current-file">
           <a href="{{ current_url }}" target="_blank">Fichier actuel ↗</a>
         </div>
       {% endif %}
-      <input type="file" id="f-{{ field.name }}" name="{{ field.name }}" accept="{{ field.get('accept', '*/*') }}">
+      <input type="file" id="f-{{ field.name }}" name="{{ field.name }}" accept="{{ field.get('accept', default_accept) }}"
+             data-async-upload
+             data-upload-url="{{ url_for('admins.upload_field', content_key=ct.key, field_name=field.name) }}">
+      <input type="hidden" name="{{ field.name }}__uploaded_url" id="uploaded-{{ field.name }}" value="">
+      <div class="admin-upload-progress" id="progress-{{ field.name }}" hidden>
+        <div class="admin-upload-progress-track"><div class="admin-upload-progress-fill"></div></div>
+        <span class="admin-upload-progress-text"></span>
+        <button type="button" class="admin-link admin-upload-retry" hidden>Réessayer</button>
+      </div>
       <p class="admin-field-help">{{ 'Laisser vide pour garder le fichier actuel.' if current_url else '' }}</p>
     {% endif %}
 

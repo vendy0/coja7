@@ -6,31 +6,35 @@
 
 <div class="admin-panel">
   <h2>Ajouter des médias</h2>
-  <form method="post" enctype="multipart/form-data" class="admin-form admin-form-inline">
+  <p class="admin-field-help">
+    Chaque fichier est envoyé séparément : si la connexion coupe en cours de
+    route, seul le fichier en cours est à relancer — tout ce qui a déjà
+    réussi reste enregistré.
+  </p>
+
+  <form id="gallery-upload-form" class="admin-form admin-form-inline"
+        data-upload-url="{{ url_for('admins.gallery_media_upload', gallery_id=gallery.id) }}"
+        data-delete-url-template="{{ url_for('admins.gallery_media_delete', gallery_id=gallery.id, media_id='__ID__') }}"
+        onsubmit="return false;">
     <div class="admin-field">
-      <label for="files">Fichiers (plusieurs sélections possibles)</label>
-      <input type="file" id="files" name="files" accept="image/*,video/*" multiple required>
+      <label for="gallery-files">Fichiers (plusieurs sélections possibles)</label>
+      <input type="file" id="gallery-files" accept="image/*,video/*" multiple>
+      <p class="admin-field-help">Le type (photo/vidéo) est détecté automatiquement.</p>
     </div>
     <div class="admin-field">
-      <label for="type">Type</label>
-      <select id="type" name="type">
-        <option value="photo">Photo</option>
-        <option value="video">Vidéo</option>
-      </select>
+      <label for="gallery-credit">Crédit (optionnel, appliqué à tous les fichiers de cet envoi)</label>
+      <input type="text" id="gallery-credit" placeholder="Ex. Photo : COJA7">
     </div>
-    <div class="admin-field">
-      <label for="credit">Crédit (optionnel)</label>
-      <input type="text" id="credit" name="credit">
-    </div>
-    <button type="submit" class="admin-btn admin-btn-primary">Envoyer</button>
   </form>
+
+  <div id="gallery-upload-queue" class="admin-upload-queue"></div>
 </div>
 
-<div class="admin-media-grid">
+<div class="admin-media-grid" id="gallery-media-grid">
   {% for item in media_items %}
   <div class="admin-media-tile">
     {% if item.type == 'video' %}
-      <video src="{{ item.media_url }}" controls></video>
+      <video src="{{ item.media_url }}" controls poster="{{ item.thumbnails_url or '' }}"></video>
     {% else %}
       <img src="{{ item.thumbnails_url or item.media_url }}" alt="">
     {% endif %}
@@ -45,4 +49,7 @@
   <p class="admin-empty">Aucun média dans cette galerie pour l'instant.</p>
   {% endfor %}
 </div>
+{% endblock %}
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/admin/gallery-upload.js') }}"></script>
 {% endblock %}
