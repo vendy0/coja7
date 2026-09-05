@@ -81,7 +81,7 @@ CONTENT_TYPES = {
                 "name": "hero_media_type", "label": "Type du média principal", "type": "select",
                 "options": ["image", "video"],
             },
-            {"name": "hero_media_url", "label": "Média principal", "type": "image"},
+            {"name": "hero_media_url", "label": "Média principal", "type": "image", "auto_type_field": "hero_media_type"},
             {"name": "hero_media_description", "label": "Légende du média", "type": "text"},
             {"name": "download_url", "label": "Document à télécharger (PDF)", "type": "pdf"},
             {"name": "download_type", "label": "Type de téléchargement (ex: PDF)", "type": "text"},
@@ -141,7 +141,7 @@ CONTENT_TYPES = {
                 "name": "hero_media_type", "label": "Type du média principal", "type": "select",
                 "options": ["image", "video"],
             },
-            {"name": "hero_media_url", "label": "Média principal", "type": "image"},
+            {"name": "hero_media_url", "label": "Média principal", "type": "image", "auto_type_field": "hero_media_type"},
             {"name": "pdf_url", "label": "Fichier PDF", "type": "pdf"},
             {
                 "name": "event_id", "label": "Événement lié", "type": "relation",

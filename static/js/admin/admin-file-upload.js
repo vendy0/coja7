@@ -9,6 +9,17 @@
 // l'envoi classique à la soumission (voir _apply_uploads côté Flask) —
 // rien ne casse si ce script ne se charge pas.
 document.addEventListener("DOMContentLoaded", function () {
+  // Champs "type de média" pilotés automatiquement (voir admins_config.py
+  // "auto_type_field") : masqués dès le chargement — leur valeur reste
+  // celle déjà en base tant qu'aucun nouveau fichier n'est choisi, et se
+  // met à jour toute seule sinon (voir plus bas dans startUpload).
+  document.querySelectorAll("input[data-auto-type-target]").forEach(function (input) {
+    const target = document.getElementById(input.dataset.autoTypeTarget);
+    if (!target) return;
+    const wrap = target.closest(".admin-field");
+    if (wrap) wrap.hidden = true;
+  });
+
   document.querySelectorAll("input[data-async-upload]").forEach(function (input) {
     const fieldName = input.name;
     const uploadUrl = input.dataset.uploadUrl;
@@ -19,6 +30,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const fill = wrap.querySelector(".admin-upload-progress-fill");
     const text = wrap.querySelector(".admin-upload-progress-text");
     const retryBtn = wrap.querySelector(".admin-upload-retry");
+    const autoTypeTarget = input.dataset.autoTypeTarget
+      ? document.getElementById(input.dataset.autoTypeTarget)
+      : null;
     let currentFile = null;
 
     function startUpload(file) {
@@ -28,6 +42,10 @@ document.addEventListener("DOMContentLoaded", function () {
       retryBtn.hidden = true;
       fill.style.width = "0%";
       text.textContent = "Envoi… 0%";
+
+      if (autoTypeTarget) {
+        autoTypeTarget.value = file.type.indexOf("video/") === 0 ? "video" : "image";
+      }
 
       const fd = new FormData();
       fd.append("file", file);

@@ -306,6 +306,7 @@ a{ color: inherit; text-decoration: none; }
 .admin-form-inline .admin-field{ flex: 1; min-width: 160px; }
 
 .admin-field{ display: flex; flex-direction: column; gap: 6px; position: relative; }
+.admin-field[hidden]{ display: none; }
 .admin-field label{ font-size: 0.86rem; font-weight: 600; color: var(--a-ink); }
 .admin-required{ color: var(--a-danger); }
 .admin-field-help{ font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; color: var(--a-ink-soft); margin: -2px 0 2px; }

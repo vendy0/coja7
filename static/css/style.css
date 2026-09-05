@@ -165,6 +165,10 @@ header .back{
   color:rgba(246,244,238,0.7);
 }
 
+header .back.about{
+    font-weight: 700;
+}
+
 main{ flex:1; overflow-y:auto; }
 
 nav{ 
