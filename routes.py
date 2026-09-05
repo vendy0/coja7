@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, abort
+from flask import Flask, render_template, request, jsonify, abort, send_from_directory
 import os
 from datetime import datetime, date, timedelta
 import calendar as pycalendar
@@ -264,3 +264,8 @@ def about():
         page_title="À propos",
         active_page="about",
     )
+    
+@app.route("/robots.txt")
+def robots_txt():
+    return send_from_directory(app.static_folder, "robots.txt")
+    

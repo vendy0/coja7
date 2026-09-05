@@ -3,6 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="description" content="{{ page_description|default('COJA7 — Communauté de Jeunesse Adventiste du Septième Jour. Actualités, sermons, événements et médias.') }}">
+<meta name="author" content="COJA7">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="{{ request.url }}">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="COJA7">
+<meta property="og:title" content="COJA7 — {{ page_title }}">
+<meta property="og:description" content="{{ page_description|default('COJA7 — Communauté de Jeunesse Adventiste du Septième Jour. Actualités, sermons, événements et médias.') }}">
+<meta property="og:url" content="{{ request.url }}">
+<meta property="og:image" content="{{ page_image|default(url_for('static', filename='img/logo.jpg', _external=True)) }}">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="COJA7 — {{ page_title }}">
+<meta name="twitter:description" content="{{ page_description|default('COJA7 — Communauté de Jeunesse Adventiste du Septième Jour. Actualités, sermons, événements et médias.') }}">
+
 <title>COJA7 — {{ page_title }}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">

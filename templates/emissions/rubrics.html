@@ -1,5 +1,21 @@
 {% extends "base.html" %}
 
+{% block extra_head %}
+{% for rubric in rubrics %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "VideoObject",
+  "name": {{ rubric.title | tojson }},
+  "description": {{ (rubric.description or rubric.title) | tojson }},
+  "uploadDate": {{ rubric.published_at | tojson }},
+  "thumbnailUrl": "https://img.youtube.com/vi/{{ rubric.youtube_id }}/hqdefault.jpg",
+  "embedUrl": "https://www.youtube.com/embed/{{ rubric.youtube_id }}"
+}
+</script>
+{% endfor %}
+{% endblock %}
+
 {% block content %}
     <div class="page-intro">
       <h1>Rubriques</h1>

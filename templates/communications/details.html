@@ -1,5 +1,22 @@
 {% extends "base.html" %}
 
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": {{ note.title | tojson }},
+  "datePublished": {{ note.published_at | tojson }},
+  "author": { "@type": "Person", "name": {{ note.author | tojson }} },
+  "publisher": {
+    "@type": "Organization",
+    "name": "COJA7",
+    "logo": { "@type": "ImageObject", "url": "{{ url_for('static', filename='img/logo.jpg', _external=True) }}" }
+  }
+}
+</script>
+{% end block %}
+
 {% block device_body %}
 <!-- TOPBAR FIXE -->
   <div class="topbar">

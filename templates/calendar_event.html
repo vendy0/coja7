@@ -1,5 +1,22 @@
 {% extends "base.html" %}
 
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Event",
+  "name": {{ event.title | tojson }},
+  "startDate": {{ event.start_date | tojson }},
+  {% if event.end_date %}"endDate": {{ event.end_date | tojson }},{% endif %}
+  "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+  "eventStatus": "https://schema.org/EventScheduled",
+  "location": { "@type": "Place", "name": {{ (event.location or "COJA7") | tojson }} },
+  "description": {{ (event.description or event.title) | tojson }},
+  "organizer": { "@type": "Organization", "name": "COJA7" }
+}
+</script>
+{% endblock %}
+
 {% block content %}
   <div class="event-detail">
     <a class="back-link" href="{{ url_for('calendar', year=back_year, month=back_month, day=back_day) if back_day else url_for('calendar') }}">
