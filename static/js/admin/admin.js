@@ -1,7 +1,11 @@
 document.addEventListener("DOMContentLoaded", function () {
   // -------------------------------------------------------------------
-  // Menu latéral sur mobile : ouverture/fermeture, clic en dehors pour
-  // fermer, et le bouton change d'icône (☰ / ✕) au même endroit.
+  // Menu latéral sur mobile. Le fond assombri passait AU-DESSUS de la
+  // navbar (bug de z-index), ce qui à la fois l'assombrissait et
+  // interceptait tous les clics dessus, empêchant toute navigation —
+  // corrigé dans style.css (sidebar z-index 200 > backdrop 150). Les
+  // liens naviguent normalement au clic, pas besoin de fermer le menu à
+  // la main : la page se recharge.
   // -------------------------------------------------------------------
   const burger = document.getElementById("admin-burger");
   const sidebar = document.querySelector(".admin-sidebar");
@@ -28,16 +32,6 @@ document.addEventListener("DOMContentLoaded", function () {
       setNavOpen(false);
     });
   }
-  // Clic sur un lien du menu = navigation, donc pas besoin de le refermer
-  // explicitement, mais utile si jamais une future version ne recharge pas
-  // la page (SPA-like) : referme quand même après un clic dans le menu.
-  if (sidebar) {
-    sidebar.querySelectorAll("a").forEach(function (link) {
-      link.addEventListener("click", function () {
-        setNavOpen(false);
-      });
-    });
-  }
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape" && sidebar && sidebar.classList.contains("open")) {
       setNavOpen(false);
@@ -45,35 +39,28 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // -------------------------------------------------------------------
-  // Champs "relation" (voir form.html) : un texte libre avec suggestions
-  // (datalist) doit se traduire par l'ID choisi dans un champ caché avant
-  // l'envoi du formulaire. Si le texte tapé ne correspond à aucune
-  // suggestion, on considère qu'aucun choix n'est fait (champ caché vidé).
+  // Confirmation avant toute action destructive (data-confirm="message").
+  // Délégué sur `document` (pas un forEach au chargement) pour couvrir
+  // aussi les formulaires ajoutés dynamiquement plus tard, comme le
+  // bouton "Supprimer" d'un média fraîchement envoyé dans une galerie.
   // -------------------------------------------------------------------
-  document.querySelectorAll("input[data-relation-hidden]").forEach(function (labelInput) {
-    const hidden = document.getElementById(labelInput.dataset.relationHidden);
-    const datalist = document.getElementById(labelInput.getAttribute("list"));
-    if (!hidden || !datalist) return;
+  document.addEventListener("submit", function (e) {
+    const form = e.target.closest("form[data-confirm]");
+    if (!form || form.dataset.confirmed === "true") return;
+    e.preventDefault();
 
-    function sync() {
-      const match = Array.from(datalist.options).find(function (o) {
-        return o.value === labelInput.value;
-      });
-      hidden.value = match ? match.dataset.id : "";
+    if (typeof window.adminConfirm !== "function") {
+      // Filet de sécurité si admin-modal.js n'a pas chargé
+      if (window.confirm(form.dataset.confirm)) form.submit();
+      return;
     }
 
-    labelInput.addEventListener("input", sync);
-    labelInput.addEventListener("change", sync);
-  });
-
-  // -------------------------------------------------------------------
-  // Confirmation avant toute action destructive (data-confirm="message")
-  // -------------------------------------------------------------------
-  document.querySelectorAll("form[data-confirm]").forEach(function (form) {
-    form.addEventListener("submit", function (e) {
-      if (!window.confirm(form.dataset.confirm)) {
-        e.preventDefault();
-      }
+    window.adminConfirm(form.dataset.confirm).then(function (ok) {
+      if (!ok) return;
+      form.dataset.confirmed = "true";
+      const loader = document.getElementById("admin-page-loader");
+      if (loader) loader.hidden = false;
+      form.submit();
     });
   });
 });

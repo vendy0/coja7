@@ -2,24 +2,24 @@
 {% block page_title %}Tableau de bord{% endblock %}
 {% block header_title %}Tableau de bord{% endblock %}
 {% block content %}
-<div class="admin-grid">
-  <a href="{{ url_for('admins.content_list', content_key='events') }}" class="admin-stat-card">
+<div class="admin-stats-strip">
+  <a href="{{ url_for('admins.content_list', content_key='events') }}" class="admin-stat">
     <span class="admin-stat-value">{{ counts.events if counts.events is not none else '—' }}</span>
     <span class="admin-stat-label">Événements</span>
   </a>
-  <a href="{{ url_for('admins.content_list', content_key='communications') }}" class="admin-stat-card">
+  <a href="{{ url_for('admins.content_list', content_key='communications') }}" class="admin-stat">
     <span class="admin-stat-value">{{ counts.communications if counts.communications is not none else '—' }}</span>
     <span class="admin-stat-label">Communications</span>
   </a>
-  <a href="{{ url_for('admins.content_list', content_key='rubrics') }}" class="admin-stat-card">
+  <a href="{{ url_for('admins.content_list', content_key='rubrics') }}" class="admin-stat">
     <span class="admin-stat-value">{{ counts.rubrics if counts.rubrics is not none else '—' }}</span>
     <span class="admin-stat-label">Rubriques vidéo</span>
   </a>
-  <a href="{{ url_for('admins.content_list', content_key='sermons') }}" class="admin-stat-card">
+  <a href="{{ url_for('admins.content_list', content_key='sermons') }}" class="admin-stat">
     <span class="admin-stat-value">{{ counts.sermons if counts.sermons is not none else '—' }}</span>
     <span class="admin-stat-label">Sermons</span>
   </a>
-  <a href="{{ url_for('admins.content_list', content_key='galleries') }}" class="admin-stat-card">
+  <a href="{{ url_for('admins.content_list', content_key='galleries') }}" class="admin-stat">
     <span class="admin-stat-value">{{ counts.galleries if counts.galleries is not none else '—' }}</span>
     <span class="admin-stat-label">Galeries</span>
   </a>

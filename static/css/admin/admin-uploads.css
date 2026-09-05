@@ -33,3 +33,30 @@
 .admin-upload-row.admin-upload-uploading .admin-upload-status{
   color: var(--a-accent, #6366F1);
 }
+
+/* Barre de progression d'un champ fichier du formulaire principal (voir
+   form.html + admin-file-upload.js) */
+.admin-upload-progress{
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.8rem;
+}
+.admin-upload-progress-track{
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(148, 163, 184, 0.18);
+  overflow: hidden;
+}
+.admin-upload-progress-fill{
+  height: 100%;
+  width: 0%;
+  background: var(--a-accent, #6366F1);
+  transition: width 0.15s ease;
+}
+.admin-upload-progress-text{
+  color: var(--a-text-dim, #94A3B8);
+  white-space: nowrap;
+}

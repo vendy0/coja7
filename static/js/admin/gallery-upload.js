@@ -202,15 +202,9 @@
         '<button type="submit" class="admin-link admin-link-danger">Supprimer</button>' +
         "</form></div>";
       gridEl.prepend(tile);
-
-      // admin.js a déjà attaché les confirmations au chargement de la page,
-      // avant que ce tile existe : on refait le même branchement pour lui.
-      const delForm = tile.querySelector("form[data-confirm]");
-      if (delForm) {
-        delForm.addEventListener("submit", function (e) {
-          if (!window.confirm(delForm.dataset.confirm)) e.preventDefault();
-        });
-      }
+      // La confirmation (data-confirm) est gérée globalement par admin.js,
+      // par délégation — pas besoin de la rebrancher pour ce tile ajouté
+      // dynamiquement.
     }
   });
 })();

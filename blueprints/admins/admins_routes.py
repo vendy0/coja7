@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from flask import (
-    Blueprint, render_template, request, redirect, url_for, flash, g, abort, jsonify
+    Blueprint, render_template, request, redirect, url_for, flash, g, abort, jsonify, session
 )
 import re
 from .admins_auth import login_admin, logout_admin, login_required, super_admin_required
@@ -486,6 +486,9 @@ def team():
 @bp_admins.route("/team/<admin_id>/toggle-active", methods=["POST"])
 @super_admin_required
 def team_toggle_active(admin_id):
+    if admin_id == session.get("admin_id"):
+        flash("Tu ne peux pas désactiver ton propre compte.", "error")
+        return redirect(url_for("admins.team"))
     row = db_ops.get_row(g.db, "admins", admin_id)
     if row:
         db_ops.update_row(g.db, "admins", admin_id, {"is_active": not row.get("is_active", True)})
@@ -496,6 +499,9 @@ def team_toggle_active(admin_id):
 @bp_admins.route("/team/<admin_id>/role", methods=["POST"])
 @super_admin_required
 def team_update_role(admin_id):
+    if admin_id == session.get("admin_id"):
+        flash("Tu ne peux pas changer ton propre rôle.", "error")
+        return redirect(url_for("admins.team"))
     role = request.form.get("role")
     if role in ("super_admin", "admin", "editor"):
         db_ops.update_row(g.db, "admins", admin_id, {"role": role})

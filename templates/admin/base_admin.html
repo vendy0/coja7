@@ -7,12 +7,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/style.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/editor-fullscreen.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/admin-nav.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/admin-uploads.css') }}">
 {% block extra_head %}{% endblock %}
 </head>
 <body class="admin-body">
+
+<div id="admin-page-loader" hidden><div class="admin-loader-mark"></div></div>
 
 {% if g.admin %}
 <div class="admin-shell">
@@ -70,7 +69,20 @@
   {% block auth_content %}{% endblock %}
 {% endif %}
 
+<div class="admin-modal-backdrop" id="admin-modal-backdrop">
+  <div class="admin-modal">
+    <p id="admin-modal-text"></p>
+    <div class="admin-modal-actions">
+      <button type="button" class="admin-btn admin-btn-ghost" id="admin-modal-cancel">Annuler</button>
+      <button type="button" class="admin-btn admin-btn-primary" id="admin-modal-confirm">Confirmer</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.umd.js"></script>
+<script src="{{ url_for('static', filename='js/admin/admin-page-loader.js') }}"></script>
+<script src="{{ url_for('static', filename='js/admin/admin-modal.js') }}"></script>
+<script src="{{ url_for('static', filename='js/admin/admin-autocomplete.js') }}"></script>
 <script src="{{ url_for('static', filename='js/admin/editor.js') }}"></script>
 <script src="{{ url_for('static', filename='js/admin/admin-file-upload.js') }}"></script>
 <script src="{{ url_for('static', filename='js/admin/admin.js') }}"></script>

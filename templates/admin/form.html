@@ -15,14 +15,13 @@
              {{ 'required' if field.required }}>
 
     {% elif field.type == 'text_suggest' %}
-      <input type="text" id="f-{{ field.name }}" name="{{ field.name }}" list="dl-{{ field.name }}"
-             value="{{ (row.get(field.name) if row else '') or '' }}" autocomplete="off"
-             placeholder="{{ field.get('placeholder', 'Écris ou choisis dans les suggestions…') }}">
-      <datalist id="dl-{{ field.name }}">
-        {% for val in suggestion_options.get(field.name, []) %}
-          <option value="{{ val }}"></option>
-        {% endfor %}
-      </datalist>
+      <input type="text" id="f-{{ field.name }}" name="{{ field.name }}" autocomplete="off"
+             value="{{ (row.get(field.name) if row else '') or '' }}"
+             placeholder="{{ field.get('placeholder', 'Écris ou choisis dans les suggestions…') }}"
+             data-autocomplete data-mode="text"
+             data-options-id="opts-{{ field.name }}" data-list-id="list-{{ field.name }}">
+      <script type="application/json" id="opts-{{ field.name }}">{{ suggestion_options.get(field.name, []) | tojson }}</script>
+      <div class="admin-autocomplete-list" id="list-{{ field.name }}" hidden></div>
 
     {% elif field.type == 'textarea' %}
       <textarea id="f-{{ field.name }}" name="{{ field.name }}" rows="4"
@@ -57,16 +56,15 @@
     {% elif field.type == 'relation' %}
       {% set current_id = row.get(field.name) if row else '' %}
       {% set current_opt = (relation_options.get(field.name, []) | selectattr('id', 'equalto', current_id) | list | first) %}
-      <input type="text" id="f-{{ field.name }}-label" list="dl-{{ field.name }}" autocomplete="off"
+      <input type="text" id="f-{{ field.name }}-label" autocomplete="off"
              value="{{ current_opt.label if current_opt else '' }}"
-             data-relation-hidden="f-{{ field.name }}"
-             placeholder="{{ field.get('placeholder', 'Tape pour chercher…') }}">
-      <datalist id="dl-{{ field.name }}">
-        {% for opt in relation_options.get(field.name, []) %}
-          <option data-id="{{ opt.id }}" value="{{ opt.label }}"></option>
-        {% endfor %}
-      </datalist>
+             placeholder="{{ field.get('placeholder', 'Tape pour chercher…') }}"
+             data-autocomplete data-mode="relation"
+             data-options-id="opts-{{ field.name }}" data-list-id="list-{{ field.name }}"
+             data-hidden-target="f-{{ field.name }}">
+      <script type="application/json" id="opts-{{ field.name }}">{{ relation_options.get(field.name, []) | tojson }}</script>
       <input type="hidden" id="f-{{ field.name }}" name="{{ field.name }}" value="{{ current_id or '' }}">
+      <div class="admin-autocomplete-list" id="list-{{ field.name }}" hidden></div>
       <p class="admin-field-help">Tape pour chercher parmi les résultats existants — laisse vide pour ne rien lier.</p>
 
     {% elif field.type in ['image', 'audio', 'pdf'] %}

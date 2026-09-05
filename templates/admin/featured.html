@@ -4,26 +4,26 @@
 {% block content %}
 <div class="admin-panel">
   <h2>Actuellement à la une</h2>
-  <div class="admin-table-wrap">
-    <table class="admin-table">
-      <thead><tr><th>Type</th><th>Contenu</th><th>Ordre</th><th></th></tr></thead>
-      <tbody>
-        {% for item in current %}
-        <tr>
-          <td>{{ item.content_type }}</td>
-          <td class="admin-mono">{{ item.content_id }}</td>
-          <td>{{ item.display_order }}</td>
-          <td class="admin-table-actions">
-            <form method="post" action="{{ url_for('admins.featured_delete', featured_id=item.id) }}" data-confirm="Retirer ce contenu de la une ?">
-              <button type="submit" class="admin-link admin-link-danger">Retirer</button>
-            </form>
-          </td>
-        </tr>
-        {% else %}
-        <tr><td colspan="4" class="admin-empty">Rien à la une pour l'instant.</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
+  <div class="admin-row-list">
+    {% for item in current %}
+    <div class="admin-row">
+      <div class="admin-row-main">
+        <p class="admin-row-title">{{ item.content_type }}</p>
+        <div class="admin-row-meta">
+          <span>Ordre {{ item.display_order }}</span>
+          <span class="sep">·</span>
+          <span>{{ item.content_id }}</span>
+        </div>
+      </div>
+      <div class="admin-row-actions">
+        <form method="post" action="{{ url_for('admins.featured_delete', featured_id=item.id) }}" data-confirm="Retirer ce contenu de la une ?">
+          <button type="submit" class="admin-link admin-link-danger">Retirer</button>
+        </form>
+      </div>
+    </div>
+    {% else %}
+    <p class="admin-empty">Rien à la une pour l'instant.</p>
+    {% endfor %}
   </div>
 </div>
 

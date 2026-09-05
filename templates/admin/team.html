@@ -7,35 +7,38 @@
   (Authentication → Invite user), puis ajoute une ligne correspondante dans la table
   <code>admins</code> avec le même <code>id</code>. Cette page permet ensuite de gérer son rôle et son accès.
 </p>
-<div class="admin-table-wrap">
-  <table class="admin-table">
-    <thead><tr><th>Nom</th><th>Rôle</th><th>Actif</th><th></th></tr></thead>
-    <tbody>
-      {% for admin in admins %}
-      <tr>
-        <td>{{ admin.first_name }} {{ admin.last_name }}</td>
-        <td>
-          <form method="post" action="{{ url_for('admins.team_update_role', admin_id=admin.id) }}" class="admin-inline-form">
-            <select name="role" onchange="this.form.submit()">
-              {% for role in ['editor', 'admin', 'super_admin'] %}
-                <option value="{{ role }}" {{ 'selected' if role == admin.role }}>{{ role }}</option>
-              {% endfor %}
-            </select>
-          </form>
-        </td>
-        <td>{{ 'Oui' if admin.is_active else 'Non' }}</td>
-        <td class="admin-table-actions">
-          <form method="post" action="{{ url_for('admins.team_toggle_active', admin_id=admin.id) }}" class="admin-inline-form">
-            <button type="submit" class="admin-link {{ 'admin-link-danger' if admin.is_active else '' }}">
-              {{ 'Désactiver' if admin.is_active else 'Réactiver' }}
-            </button>
-          </form>
-        </td>
-      </tr>
+
+<div class="admin-row-list">
+  {% for admin in admins %}
+  {% set is_self = admin.id == g.admin.id %}
+  <div class="admin-row">
+    <div class="admin-row-main">
+      <p class="admin-row-title">{{ admin.first_name }} {{ admin.last_name }}{% if is_self %} <span class="admin-field-help">(toi)</span>{% endif %}</p>
+      <div class="admin-row-meta">
+        <span>{{ 'Actif' if admin.is_active else 'Désactivé' }}</span>
+      </div>
+    </div>
+    <div class="admin-row-actions">
+      {% if is_self %}
+        <span class="admin-field-help">{{ admin.role }} — modifiable par un autre super-admin</span>
       {% else %}
-      <tr><td colspan="4" class="admin-empty">Aucun compte trouvé.</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
+        <form method="post" action="{{ url_for('admins.team_update_role', admin_id=admin.id) }}" class="admin-inline-form">
+          <select name="role" onchange="this.form.submit()">
+            {% for role in ['editor', 'admin', 'super_admin'] %}
+              <option value="{{ role }}" {{ 'selected' if role == admin.role }}>{{ role }}</option>
+            {% endfor %}
+          </select>
+        </form>
+        <form method="post" action="{{ url_for('admins.team_toggle_active', admin_id=admin.id) }}" class="admin-inline-form" data-confirm="{{ 'Désactiver' if admin.is_active else 'Réactiver' }} le compte de {{ admin.first_name }} {{ admin.last_name }} ?">
+          <button type="submit" class="admin-link {{ 'admin-link-danger' if admin.is_active else '' }}">
+            {{ 'Désactiver' if admin.is_active else 'Réactiver' }}
+          </button>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+  {% else %}
+  <p class="admin-empty">Aucun compte trouvé.</p>
+  {% endfor %}
 </div>
 {% endblock %}
