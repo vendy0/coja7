@@ -25,6 +25,10 @@ MOIS_FR = [
     "juillet", "août", "septembre", "octobre", "novembre", "décembre",
 ]
 
+@app.errorhandler(500)
+def internal_error(e):
+    return render_template("error.html", page_title="Erreur", active_page=""), 500
+    
 @app.template_filter("date_fr")
 def date_fr(value):
     """Formate une date ISO (renvoyée par Supabase) en '27 août 2026'."""

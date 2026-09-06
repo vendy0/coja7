@@ -430,10 +430,13 @@ def gallery_media_upload(gallery_id):
 def gallery_media_delete(gallery_id, media_id):
     item = db_ops.get_row(g.db, "media_items", media_id)
     if item:
-        db_ops.delete_file_by_url(g.db, item.get("media_url"))
-        db_ops.delete_file_by_url(g.db, item.get("thumbnails_url"))
-        db_ops.delete_row(g.db, "media_items", media_id)
-        flash("Média supprimé.", "success")
+        try:
+            db_ops.delete_file_by_url(g.db, item.get("media_url"))
+            db_ops.delete_file_by_url(g.db, item.get("thumbnails_url"))
+            db_ops.delete_row(g.db, "media_items", media_id)
+            flash("Média supprimé.", "success")
+        except Exception as e:
+            flash(f"Erreur lors de la suppression : {e}", "error")
     return redirect(url_for("admins.gallery_media", gallery_id=gallery_id))
 
 
@@ -455,33 +458,46 @@ def featured():
         content_type = request.form.get("content_type")
         content_id = request.form.get("content_id")
         if content_type in FEATURED_TYPE_TABLE and content_id:
-            g.db.table("featured_content").upsert(
-                {
-                    "content_type": content_type,
-                    "content_id": content_id,
-                    "display_order": int(request.form.get("display_order") or 0),
-                },
-                on_conflict="content_type, content_id"  # <--- Spécifier les deux colonnes de la contrainte
-            ).execute()
-            flash("Contenu ajouté à la une.", "success")
+            try:
+                g.db.table("featured_content").upsert(
+                    {
+                        "content_type": content_type,
+                        "content_id": content_id,
+                        "display_order": int(request.form.get("display_order") or 0),
+                    },
+                    on_conflict="content_type, content_id"  # <--- Spécifier les deux colonnes de la contrainte
+                ).execute()
+                flash("Contenu ajouté à la une.", "success")
+            except Exception as e:
+                flash(f"Erreur lors de l'ajout à la une : {e}", "error")
         return redirect(url_for("admins.featured"))
 
-    current = (
-        g.db.table("featured_content").select("*").order("display_order").execute().data or []
-    )
+    try:
+        current = (
+            g.db.table("featured_content").select("*").order("display_order").execute().data or []
+        )
+    except Exception as e:
+        flash(f"Erreur de chargement : {e}", "error")
+        current = []
+
     # Options disponibles par type, pour le formulaire d'ajout
-    options_by_type = {
-        ftype: db_ops.list_relation_options(g.db, table, "title")
-        for ftype, table in FEATURED_TYPE_TABLE.items()
-    }
+    options_by_type = {}
+    for ftype, table in FEATURED_TYPE_TABLE.items():
+        try:
+            options_by_type[ftype] = db_ops.list_relation_options(g.db, table, "title")
+        except Exception:
+            options_by_type[ftype] = []
     return render_template("admin/featured.html", current=current, options_by_type=options_by_type)
 
 
 @bp_admins.route("/featured/<featured_id>/delete", methods=["POST"])
 @login_required
 def featured_delete(featured_id):
-    db_ops.delete_row(g.db, "featured_content", featured_id)
-    flash("Retiré de la une.", "success")
+    try:
+        db_ops.delete_row(g.db, "featured_content", featured_id)
+        flash("Retiré de la une.", "success")
+    except Exception as e:
+        flash(f"Erreur lors du retrait : {e}", "error")
     return redirect(url_for("admins.featured"))
 
 
@@ -492,15 +508,19 @@ def featured_delete(featured_id):
 @bp_admins.route("/messages")
 @login_required
 def messages():
-    rows = (
-        g.db.table("support_messages")
-        .select("*")
-        .order("created_at", desc=True)
-        .limit(200)
-        .execute()
-        .data
-        or []
-    )
+    try:
+        rows = (
+            g.db.table("support_messages")
+            .select("*")
+            .order("created_at", desc=True)
+            .limit(200)
+            .execute()
+            .data
+            or []
+        )
+    except Exception as e:
+        flash(f"Erreur de chargement : {e}", "error")
+        rows = []
     return render_template("admin/messages.html", messages=rows)
 
 
@@ -509,16 +529,22 @@ def messages():
 def message_toggle_resolved(message_id):
     row = db_ops.get_row(g.db, "support_messages", message_id)
     if row:
-        db_ops.update_row(g.db, "support_messages", message_id, {"is_resolved": not row.get("is_resolved", False)})
-        flash("Statut mis à jour.", "success")
+        try:
+            db_ops.update_row(g.db, "support_messages", message_id, {"is_resolved": not row.get("is_resolved", False)})
+            flash("Statut mis à jour.", "success")
+        except Exception as e:
+            flash(f"Erreur lors de la mise à jour : {e}", "error")
     return redirect(url_for("admins.messages"))
 
 
 @bp_admins.route("/messages/<message_id>/delete", methods=["POST"])
 @login_required
 def message_delete(message_id):
-    db_ops.delete_row(g.db, "support_messages", message_id)
-    flash("Message supprimé.", "success")
+    try:
+        db_ops.delete_row(g.db, "support_messages", message_id)
+        flash("Message supprimé.", "success")
+    except Exception as e:
+        flash(f"Erreur lors de la suppression : {e}", "error")
     return redirect(url_for("admins.messages"))
 
 
@@ -529,7 +555,11 @@ def message_delete(message_id):
 @bp_admins.route("/team")
 @super_admin_required
 def team():
-    admins = g.db.table("admins").select("*").order("created_at").execute().data or []
+    try:
+        admins = g.db.table("admins").select("*").order("created_at").execute().data or []
+    except Exception as e:
+        flash(f"Erreur de chargement : {e}", "error")
+        admins = []
     return render_template("admin/team.html", admins=admins)
 
 
@@ -541,8 +571,11 @@ def team_toggle_active(admin_id):
         return redirect(url_for("admins.team"))
     row = db_ops.get_row(g.db, "admins", admin_id)
     if row:
-        db_ops.update_row(g.db, "admins", admin_id, {"is_active": not row.get("is_active", True)})
-        flash("Statut mis à jour.", "success")
+        try:
+            db_ops.update_row(g.db, "admins", admin_id, {"is_active": not row.get("is_active", True)})
+            flash("Statut mis à jour.", "success")
+        except Exception as e:
+            flash(f"Erreur lors de la mise à jour : {e}", "error")
     return redirect(url_for("admins.team"))
 
 
@@ -554,6 +587,9 @@ def team_update_role(admin_id):
         return redirect(url_for("admins.team"))
     role = request.form.get("role")
     if role in ("super_admin", "admin", "editor"):
-        db_ops.update_row(g.db, "admins", admin_id, {"role": role})
-        flash("Rôle mis à jour.", "success")
+        try:
+            db_ops.update_row(g.db, "admins", admin_id, {"role": role})
+            flash("Rôle mis à jour.", "success")
+        except Exception as e:
+            flash(f"Erreur lors de la mise à jour : {e}", "error")
     return redirect(url_for("admins.team"))
