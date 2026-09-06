@@ -413,6 +413,21 @@ body.admin-editor-lock-scroll{ overflow: hidden; }
 .admin-upload-progress[hidden]{ display: none; }
 .admin-upload-progress-track{ flex: 1; height: 6px; border-radius: 3px; background: var(--a-paper-dim); overflow: hidden; }
 .admin-upload-progress-fill{ height: 100%; width: 0%; background: var(--a-bordeaux); transition: width 0.15s ease; }
+/* Phase serveur→R2/B2 : pas de % connu, donc un dégradé qui glisse plutôt
+   qu'un remplissage figé — même esprit que le scintillement du site public. */
+.admin-upload-progress-fill.is-indeterminate{
+  width: 100%;
+  background: linear-gradient(90deg, var(--a-paper-dim) 0%, var(--a-bordeaux) 50%, var(--a-paper-dim) 100%);
+  background-size: 200% 100%;
+  animation: admin-upload-indeterminate 1.2s ease-in-out infinite;
+}
+@keyframes admin-upload-indeterminate{
+  0%{ background-position: 200% 0; }
+  100%{ background-position: -200% 0; }
+}
+@media (prefers-reduced-motion: reduce){
+  .admin-upload-progress-fill.is-indeterminate{ animation: none; background: var(--a-bordeaux); }
+}
 .admin-upload-progress-text{ color: var(--a-ink-soft); white-space: nowrap; font-family: 'IBM Plex Mono', monospace; }
 
 .admin-upload-queue{ margin-top: 14px; display: flex; flex-direction: column; gap: 6px; }
@@ -422,6 +437,14 @@ body.admin-editor-lock-scroll{ overflow: hidden; }
 .admin-upload-row.admin-upload-error{ background: rgba(179, 38, 30, 0.08); }
 .admin-upload-row.admin-upload-error .admin-upload-status{ color: var(--a-danger); }
 .admin-upload-row.admin-upload-uploading .admin-upload-status{ color: var(--a-bordeaux); }
+.admin-upload-row.admin-upload-serverphase{
+  background: linear-gradient(90deg, var(--a-paper-dim) 0%, rgba(122,16,49,0.12) 50%, var(--a-paper-dim) 100%);
+  background-size: 200% 100%;
+  animation: admin-upload-indeterminate 1.2s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce){
+  .admin-upload-row.admin-upload-serverphase{ animation: none; background: rgba(122,16,49,0.1); }
+}
 
 /* ---------------------------------------------------------------------
    Auth

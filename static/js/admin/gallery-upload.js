@@ -42,7 +42,10 @@
     function statusLabel(item) {
       switch (item.status) {
         case "pending": return "En attente…";
-        case "uploading": return "Envoi… " + (item.progress || 0) + "%";
+        case "uploading":
+          return item.serverPhase
+            ? "Envoi vers le serveur de stockage…"
+            : "Envoi… " + (item.progress || 0) + "%";
         case "done": return "Envoyé ✓";
         case "error": return "Échec — " + (item.error || "réessaie");
         default: return "";
@@ -54,7 +57,7 @@
       queue.forEach(function (item) {
         if (item.status === "done") return; // le fichier apparaît désormais dans la grille, plus besoin de le lister ici
         const row = document.createElement("div");
-        row.className = "admin-upload-row admin-upload-" + item.status;
+        row.className = "admin-upload-row admin-upload-" + item.status + (item.serverPhase ? " admin-upload-serverphase" : "");
         row.innerHTML =
           '<span class="admin-upload-name">' + escapeHtml(item.file.name) + "</span>" +
           '<span class="admin-upload-status">' + statusLabel(item) + "</span>" +
@@ -69,6 +72,7 @@
           if (item) {
             item.status = "pending";
             item.error = null;
+            item.serverPhase = false;
             renderQueue();
             processQueue();
           }
@@ -83,6 +87,7 @@
         if (item.status !== "pending") continue;
         item.status = "uploading";
         item.progress = 0;
+        item.serverPhase = false;
         renderQueue();
         try {
           const mediaType = item.file.type.indexOf("video/") === 0 ? "video" : "photo";
@@ -94,8 +99,9 @@
               thumbnailBlob = null; // pas grave : la vidéo s'enverra sans vignette
             }
           }
-          const savedItem = await uploadOne(item.file, mediaType, thumbnailBlob, function (pct) {
+          const savedItem = await uploadOne(item.file, mediaType, thumbnailBlob, function (pct, serverPhase) {
             item.progress = pct;
+            item.serverPhase = !!serverPhase;
             renderQueue();
           });
           item.status = "done";
@@ -121,7 +127,11 @@
         const xhr = new XMLHttpRequest();
         xhr.open("POST", uploadUrl);
         xhr.upload.addEventListener("progress", function (e) {
-          if (e.lengthComputable) onProgress(Math.round((e.loaded / e.total) * 100));
+          if (!e.lengthComputable) return;
+          const pct = Math.round((e.loaded / e.total) * 100);
+          // Navigateur → Flask fini à 100%, mais Flask → R2 tourne encore
+          // derrière : pas de pourcentage possible pour cette partie-là.
+          onProgress(pct, pct >= 100);
         });
         xhr.onload = function () {
           let data = null;

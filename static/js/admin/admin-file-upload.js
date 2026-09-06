@@ -40,6 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
       hidden.value = "";
       wrap.hidden = false;
       retryBtn.hidden = true;
+      fill.classList.remove("is-indeterminate");
       fill.style.width = "0%";
       text.textContent = "Envoi… 0%";
 
@@ -53,8 +54,18 @@ document.addEventListener("DOMContentLoaded", function () {
       const xhr = new XMLHttpRequest();
       xhr.open("POST", uploadUrl);
       xhr.upload.addEventListener("progress", function (e) {
-        if (e.lengthComputable) {
-          const pct = Math.round((e.loaded / e.total) * 100);
+        if (!e.lengthComputable) return;
+        const pct = Math.round((e.loaded / e.total) * 100);
+        if (pct >= 100) {
+          // Le navigateur a fini d'envoyer, mais le serveur travaille
+          // encore (upload vers R2/B2) — pas de pourcentage possible pour
+          // cette partie-là, donc barre animée plutôt qu'un "100%" figé
+          // qui donnerait l'impression que c'est déjà terminé.
+          fill.classList.add("is-indeterminate");
+          fill.style.width = "";
+          text.textContent = "Envoi vers le serveur de stockage…";
+        } else {
+          fill.classList.remove("is-indeterminate");
           fill.style.width = pct + "%";
           text.textContent = "Envoi… " + pct + "%";
         }
@@ -62,6 +73,7 @@ document.addEventListener("DOMContentLoaded", function () {
       xhr.onload = function () {
         let data = null;
         try { data = JSON.parse(xhr.responseText); } catch (e) { /* réponse non-JSON */ }
+        fill.classList.remove("is-indeterminate");
         if (xhr.status >= 200 && xhr.status < 300 && data && data.ok) {
           hidden.value = data.url;
           fill.style.width = "100%";
@@ -73,6 +85,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       };
       xhr.onerror = function () {
+        fill.classList.remove("is-indeterminate");
         text.textContent = "Échec — connexion interrompue";
         retryBtn.hidden = false;
       };
