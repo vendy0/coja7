@@ -264,8 +264,21 @@ a{ color: inherit; text-decoration: none; }
    Listes de contenu — lignes typographiques (comme .note-row côté
    public), pas des tableaux : pas de cellule vide possible.
    --------------------------------------------------------------------- */
-.admin-toolbar{ display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.admin-toolbar{ display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 6px; }
 .admin-toolbar-count{ font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; color: var(--a-ink-soft); }
+.admin-search-form{ flex: 1; min-width: 140px; }
+.admin-search-input{
+  width: 100%;
+  max-width: 280px;
+  background: var(--a-paper);
+  border: 1px solid var(--a-hairline);
+  border-radius: 6px;
+  padding: 8px 11px;
+  font-family: inherit;
+  font-size: 0.86rem;
+  color: var(--a-ink);
+}
+.admin-search-input:focus{ outline: none; border-color: var(--a-bordeaux); }
 
 .admin-row-list{ border-top: 1px solid var(--a-hairline); }
 .admin-row{

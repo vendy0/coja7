@@ -141,7 +141,20 @@ def content_list(content_key):
     if not ct:
         abort(404)
     rows = db_ops.list_rows(g.db, ct["table"], order_by=ct.get("order_by"), order_desc=ct.get("order_desc", False))
-    return render_template("admin/list.html", ct=ct, rows=rows)
+
+    query = request.args.get("q", "").strip()
+    if query:
+        # Filtrage simple côté Python sur les colonnes déjà affichées dans
+        # la liste — pas touché à la requête Supabase elle-même, pour ne
+        # rien risquer sur ce qui marche déjà.
+        q_lower = query.lower()
+        searchable_fields = [name for name, _ in ct["list_columns"]]
+        rows = [
+            row for row in rows
+            if any(q_lower in str(row.get(field) or "").lower() for field in searchable_fields)
+        ]
+
+    return render_template("admin/list.html", ct=ct, rows=rows, query=query)
 
 
 def _apply_uploads(ct, payload):

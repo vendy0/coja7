@@ -3,6 +3,9 @@
 {% block header_title %}{{ ct.label }}{% endblock %}
 {% block content %}
 <div class="admin-toolbar">
+  <form method="get" class="admin-search-form">
+    <input type="search" name="q" value="{{ query or '' }}" placeholder="Rechercher…" class="admin-search-input">
+  </form>
   <span class="admin-toolbar-count">{{ rows|length }} élément(s)</span>
   <a href="{{ url_for('admins.content_new', content_key=ct.key) }}" class="admin-btn admin-btn-primary">+ Ajouter</a>
 </div>
