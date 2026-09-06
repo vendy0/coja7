@@ -250,20 +250,29 @@ def content_new(content_key):
 
     relation_options = _relation_options(ct)
     suggestion_options = _suggestion_options(ct)
+    is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
 
     if request.method == "POST":
         payload = _parse_form(ct["fields"], request.form)
         upload_error = _apply_uploads(ct, payload)
 
         if upload_error:
+            if is_ajax:
+                return jsonify(ok=False, error=upload_error), 400
             flash(upload_error, "error")
         else:
             try:
                 db_ops.create_row(g.db, ct["table"], payload)
+                redirect_url = url_for("admins.content_list", content_key=content_key)
+                if is_ajax:
+                    return jsonify(ok=True, redirect=redirect_url)
                 flash(f"{ct['label_singular'].capitalize()} créé·e avec succès.", "success")
-                return redirect(url_for("admins.content_list", content_key=content_key))
+                return redirect(redirect_url)
             except Exception as e:
-                flash(f"Erreur lors de la création : {e}", "error")
+                error_msg = f"Erreur lors de la création : {e}"
+                if is_ajax:
+                    return jsonify(ok=False, error=error_msg), 502
+                flash(error_msg, "error")
 
     return render_template(
         "admin/form.html", ct=ct, row=None,
@@ -284,6 +293,7 @@ def content_edit(content_key, row_id):
 
     relation_options = _relation_options(ct)
     suggestion_options = _suggestion_options(ct)
+    is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
 
     if request.method == "POST":
         payload = _parse_form(ct["fields"], request.form)
@@ -291,14 +301,22 @@ def content_edit(content_key, row_id):
         # sinon (aucun fichier choisi) : on garde l'URL existante, on ne l'écrase pas
 
         if upload_error:
+            if is_ajax:
+                return jsonify(ok=False, error=upload_error), 400
             flash(upload_error, "error")
         else:
             try:
                 db_ops.update_row(g.db, ct["table"], row_id, payload)
+                redirect_url = url_for("admins.content_list", content_key=content_key)
+                if is_ajax:
+                    return jsonify(ok=True, redirect=redirect_url)
                 flash(f"{ct['label_singular'].capitalize()} mis·e à jour.", "success")
-                return redirect(url_for("admins.content_list", content_key=content_key))
+                return redirect(redirect_url)
             except Exception as e:
-                flash(f"Erreur lors de la mise à jour : {e}", "error")
+                error_msg = f"Erreur lors de la mise à jour : {e}"
+                if is_ajax:
+                    return jsonify(ok=False, error=error_msg), 502
+                flash(error_msg, "error")
 
     return render_template(
         "admin/form.html", ct=ct, row=row,

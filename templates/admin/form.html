@@ -2,7 +2,7 @@
 {% block page_title %}{{ 'Modifier' if row else 'Nouveau' }} — {{ ct.label }}{% endblock %}
 {% block header_title %}{{ 'Modifier' if row else 'Ajouter' }} — {{ ct.label }}{% endblock %}
 {% block content %}
-<form method="post" enctype="multipart/form-data" class="admin-form">
+<form method="post" enctype="multipart/form-data" class="admin-form admin-content-form" data-ajax-toggle>
   {% for field in ct.fields %}
   <div class="admin-field admin-field-{{ field.type }}">
     <label for="f-{{ field.name }}">{{ field.label }}{% if field.required %} <span class="admin-required">*</span>{% endif %}</label>

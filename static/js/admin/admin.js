@@ -63,4 +63,14 @@ document.addEventListener("DOMContentLoaded", function () {
       form.submit();
     });
   });
+
+  // Filet anti-cache : après un enregistrement (voir admin-content-form.js,
+  // qui utilise history.back() plutôt que de recharger l'URL), le retour
+  // arrière peut restaurer une version en cache de la page — figée avant
+  // l'enregistrement, donc sans le contenu tout juste créé/modifié. On
+  // force un rechargement dans ce cas précis pour être sûr de voir l'état
+  // à jour.
+  window.addEventListener("pageshow", function (e) {
+    if (e.persisted) location.reload();
+  });
 });

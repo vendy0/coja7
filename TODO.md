@@ -7,6 +7,7 @@
 Admin
 31. Mettre un filtre "traité", "non traité" dans la page des messages
 32. Mettre le meme truc ajax sur les filtres de messages
+33. Changer tout ce qui mérite d'être changé en Ajax (Claude m'a donné une liste je crois)
 
 
 Maths

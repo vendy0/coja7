@@ -1,4 +1,5 @@
 function openSupportModal() {
+  document.getElementById("support_opened_at").value = Date.now() / 1000;
   document.getElementById("supportModal").classList.add("active");
 }
 function closeSupportModal() {

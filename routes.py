@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, jsonify, abort, send_from_dir
 import os
 from datetime import datetime, date, timedelta
 import calendar as pycalendar
+import time
 from database import fetch_content_item, get_featured_content, get_recent_items, get_events_for_grid, get_event_detail, create_support_message
 from blueprints.communications import bp_communications
 from blueprints.emissions import bp_emissions
@@ -269,8 +270,26 @@ def about():
         active_page="about",
     )
 
+_last_message_by_ip = {}  # simple, en mémoire — suffisant pour ce volume de trafic
+
 @app.route("/send-message", methods=["POST"])
 def send_message_route():
+    # Honeypot : champ invisible pour les humains, rempli par la plupart des bots
+    if (request.form.get("website") or "").strip():
+        return jsonify(ok=True)  # on fait style que ça a marché, sans rien enregistrer
+
+    # Délai minimum : un envoi en moins de 2s depuis l'ouverture du formulaire est suspect
+    opened_at = request.form.get("opened_at", type=float) or 0
+    if time.time() - opened_at < 2:
+        return jsonify(ok=True)
+
+    # Limite : 1 message par IP toutes les 30 secondes
+    ip = request.remote_addr
+    now = time.time()
+    if now - _last_message_by_ip.get(ip, 0) < 30:
+        return jsonify(ok=False, error="Attends un peu avant de renvoyer un message."), 429
+    _last_message_by_ip[ip] = now
+
     message = (request.form.get("message") or "").strip()
     if not message:
         return jsonify(ok=False, error="Message vide."), 400
@@ -279,13 +298,10 @@ def send_message_route():
 
     try:
         create_support_message(message)
-        return jsonify(ok=True)  # Confirmation de succès transmise au client
+        return jsonify(ok=True)
     except Exception as e:
         print(f"Erreur send_message_route: {e}")
-        return (
-            jsonify(ok=False, error="Erreur d'envoi, réessaie plus tard."),
-            502,
-        )
+        return jsonify(ok=False, error="Erreur d'envoi, réessaie plus tard."), 502
         
 @app.route("/robots.txt")
 def robots_txt():
