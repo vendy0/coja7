@@ -1,11 +1,17 @@
 from flask import Blueprint, render_template, request, jsonify
+import re
 from database import get_federation_news, get_federation_detail, get_communications_count_by_federation
-
 # Création du Blueprint
 bp_communications = Blueprint('communications', __name__, url_prefix='/communications')
 
 NOTES_PAGE_SIZE = 10
 
+def _plain_text_excerpt(html, length=160):
+    """Convertit le HTML riche (Quill) en texte brut, tronqué — pour les balises meta description."""
+    text = re.sub(r"<[^>]+>", " ", html or "")
+    text = re.sub(r"\s+", " ", text).strip()
+    return (text[:length] + "…") if len(text) > length else text
+    
 @bp_communications.route("/")
 def index():
     counts = get_communications_count_by_federation()
@@ -41,5 +47,6 @@ def federation_detail(federation, note_id):
         "communications/details.html",
         note=note,
         page_title="Détail de la note",
+        page_description=_plain_text_excerpt(note.get("content"), 160),
         active_page="details",
     )

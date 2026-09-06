@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify, abort, send_from_dir
 import os
 from datetime import datetime, date, timedelta
 import calendar as pycalendar
-from database import fetch_content_item, get_featured_content, get_recent_items, get_events_for_grid, get_event_detail
+from database import fetch_content_item, get_featured_content, get_recent_items, get_events_for_grid, get_event_detail, create_support_message
 from blueprints.communications import bp_communications
 from blueprints.emissions import bp_emissions
 from blueprints.medias import bp_medias
@@ -264,7 +264,25 @@ def about():
         page_title="À propos",
         active_page="about",
     )
-    
+
+@app.route("/send-message", methods=["POST"])
+def send_message_route():
+    message = (request.form.get("message") or "").strip()
+    if not message:
+        return jsonify(ok=False, error="Message vide."), 400
+    if len(message) > 400:
+        return jsonify(ok=False, error="Message trop long."), 400
+
+    try:
+        create_support_message(message)
+        return jsonify(ok=True)  # Confirmation de succès transmise au client
+    except Exception as e:
+        print(f"Erreur send_message_route: {e}")
+        return (
+            jsonify(ok=False, error="Erreur d'envoi, réessaie plus tard."),
+            502,
+        )
+        
 @app.route("/robots.txt")
 def robots_txt():
     return send_from_directory(app.static_folder, "robots.txt")

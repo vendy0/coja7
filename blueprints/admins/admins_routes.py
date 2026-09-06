@@ -486,6 +486,43 @@ def featured_delete(featured_id):
 
 
 # ---------------------------------------------------------------------------
+# Messages reçus depuis le bouton de contact public
+# ---------------------------------------------------------------------------
+
+@bp_admins.route("/messages")
+@login_required
+def messages():
+    rows = (
+        g.db.table("support_messages")
+        .select("*")
+        .order("created_at", desc=True)
+        .limit(200)
+        .execute()
+        .data
+        or []
+    )
+    return render_template("admin/messages.html", messages=rows)
+
+
+@bp_admins.route("/messages/<message_id>/toggle-resolved", methods=["POST"])
+@login_required
+def message_toggle_resolved(message_id):
+    row = db_ops.get_row(g.db, "support_messages", message_id)
+    if row:
+        db_ops.update_row(g.db, "support_messages", message_id, {"is_resolved": not row.get("is_resolved", False)})
+        flash("Statut mis à jour.", "success")
+    return redirect(url_for("admins.messages"))
+
+
+@bp_admins.route("/messages/<message_id>/delete", methods=["POST"])
+@login_required
+def message_delete(message_id):
+    db_ops.delete_row(g.db, "support_messages", message_id)
+    flash("Message supprimé.", "success")
+    return redirect(url_for("admins.messages"))
+
+
+# ---------------------------------------------------------------------------
 # Gestion des comptes admins (super_admin uniquement)
 # ---------------------------------------------------------------------------
 

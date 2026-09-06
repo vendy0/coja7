@@ -244,3 +244,10 @@ def get_event_detail(event_id):
         .execute()
         .data
     )
+    
+def create_support_message(message):
+    """Enregistre un message envoyé depuis le bouton de contact public."""
+    supabase.table("support_messages").insert(
+        {"message": message}, returning="minimal"
+    ).execute()
+    return True

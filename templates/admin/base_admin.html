@@ -3,10 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="robots" content="noindex, nofollow">
-
 <title>Admin COJA7 — {% block page_title %}{% endblock %}</title>
-
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/style.css') }}">
@@ -33,6 +30,7 @@
       <a href="{{ url_for('admins.content_list', content_key='sermons') }}" class="{{ 'active' if request.view_args and request.view_args.get('content_key') == 'sermons' }}">Sermons</a>
       <a href="{{ url_for('admins.content_list', content_key='galleries') }}" class="{{ 'active' if request.view_args and request.view_args.get('content_key') == 'galleries' }}">Galeries</a>
       <a href="{{ url_for('admins.featured') }}" class="{{ 'active' if request.endpoint == 'admins.featured' }}">À la une</a>
+      <a href="{{ url_for('admins.messages') }}" class="{{ 'active' if request.endpoint == 'admins.messages' }}">Messages</a>
       {% if g.admin.role == 'super_admin' %}
       <div class="admin-nav-label">Équipe</div>
       <a href="{{ url_for('admins.team') }}" class="{{ 'active' if request.endpoint == 'admins.team' }}">Administrateurs</a>

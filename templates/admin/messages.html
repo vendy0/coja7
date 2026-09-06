@@ -1,0 +1,29 @@
+{% extends "admin/base_admin.html" %}
+{% block page_title %}Messages{% endblock %}
+{% block header_title %}Messages reçus{% endblock %}
+{% block content %}
+<div class="admin-row-list">
+  {% for msg in messages %}
+  <div class="admin-row">
+    <div class="admin-row-main">
+      <p class="admin-row-title admin-row-title-wrap">{{ msg.message }}</p>
+      <div class="admin-row-meta">
+        <span>{{ msg.created_at | date_fr }}</span>
+        <span class="sep">·</span>
+        <span>{{ 'Traité' if msg.is_resolved else 'Non traité' }}</span>
+      </div>
+    </div>
+    <div class="admin-row-actions">
+      <form method="post" action="{{ url_for('admins.message_toggle_resolved', message_id=msg.id) }}" class="admin-inline-form">
+        <button type="submit" class="admin-link">{{ 'Non traité' if msg.is_resolved else 'Traité' }}</button>
+      </form>
+      <form method="post" action="{{ url_for('admins.message_delete', message_id=msg.id) }}" class="admin-inline-form" data-confirm="Supprimer ce message ?">
+        <button type="submit" class="admin-link admin-link-danger">Supprimer</button>
+      </form>
+    </div>
+  </div>
+  {% else %}
+  <p class="admin-empty">Aucun message reçu.</p>
+  {% endfor %}
+</div>
+{% endblock %}

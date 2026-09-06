@@ -66,10 +66,33 @@
       <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><rect x="4" y="5.5" width="16" height="14" rx="0.5"/><path d="M4 10h16M8 3.5v4M16 3.5v4"/></svg>
       <span>Calendrier</span>
     </a>
-  </nav>
+    </nav>
+
+  <button id="support-fab" class="fab-button" onclick="openSupportModal()" aria-label="Contacter l'équipe">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+  </button>
+
+  <div id="supportModal" class="support-modal">
+    <div class="support-modal-content">
+      <h4>Contacter l'équipe</h4>
+      <p>Une question, un problème, une suggestion ? Écris-nous.</p>
+      <form id="supportForm" data-action="{{ url_for('send_message_route') }}">
+        <div class="textarea-wrapper">
+          <textarea name="message" id="support_message" rows="5" placeholder="Ton message ici…" maxlength="600" required></textarea>
+          <div id="char-counter">0 / 600</div>
+        </div>
+        <div id="support-feedback" class="support-feedback" hidden></div>
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" onclick="closeSupportModal()">Annuler</button>
+          <button type="submit" class="btn-send">Envoyer</button>
+        </div>
+      </form>
+    </div>
+  </div>
 {% endblock %}
 
 <script src="{{ url_for('static', filename='js/load-more.js') }}"></script>
+<script src="{{ url_for('static', filename='js/support-widget.js') }}"></script>
 {% block extra_scripts %}{% endblock %}
 </body>
 </html>

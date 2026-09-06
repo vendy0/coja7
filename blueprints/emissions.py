@@ -1,12 +1,18 @@
 from flask import Blueprint, render_template, request, jsonify
+import re
 from database import get_emissions_count, get_all_rubrics, get_all_sermons, get_sermon_detail
-
 # Création du Blueprint
 bp_emissions = Blueprint('emissions', __name__, url_prefix='/emissions')
 
 RUBRICS_PAGE_SIZE = 9
 SERMONS_PAGE_SIZE = 10
 
+def _plain_text_excerpt(html, length=160):
+    """Convertit le HTML riche (Quill) en texte brut, tronqué — pour les balises meta description."""
+    text = re.sub(r"<[^>]+>", " ", html or "")
+    text = re.sub(r"\s+", " ", text).strip()
+    return (text[:length] + "…") if len(text) > length else text
+    
 @bp_emissions.route("/")
 def index():
     counts = get_emissions_count()
@@ -60,8 +66,9 @@ def load_more_sermons():
 def sermon_detail(sermon_id):
     sermon = get_sermon_detail(sermon_id)
     return render_template(
-        "emissions/details_sermon.html", 
-        sermon=sermon, 
-        page_title=sermon.get("title", "Sermon"), 
+        "emissions/details_sermon.html",
+        sermon=sermon,
+        page_title=sermon.get("title", "Sermon"),
+        page_description=_plain_text_excerpt(sermon.get("content"), 160),
         active_page="emissions"
     )
