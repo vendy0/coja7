@@ -280,6 +280,19 @@ a{ color: inherit; text-decoration: none; }
 }
 .admin-search-input:focus{ outline: none; border-color: var(--a-bordeaux); }
 
+.admin-filter-tabs{ display: flex; gap: 4px; }
+.admin-filter-tabs a{
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--a-ink-soft);
+  border: 1px solid var(--a-hairline);
+}
+.admin-filter-tabs a.active{ background: var(--a-navy); color: var(--a-paper); border-color: var(--a-navy); }
+
 .admin-row-list{ border-top: 1px solid var(--a-hairline); }
 .admin-row{
   display: flex;

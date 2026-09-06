@@ -2,6 +2,15 @@
 {% block page_title %}Messages{% endblock %}
 {% block header_title %}Messages reçus{% endblock %}
 {% block content %}
+<div class="admin-toolbar">
+  <div class="admin-filter-tabs">
+    <a href="{{ url_for('admins.messages', status='all') }}" class="{{ 'active' if status == 'all' }}">Tous</a>
+    <a href="{{ url_for('admins.messages', status='unresolved') }}" class="{{ 'active' if status == 'unresolved' }}">Non traités</a>
+    <a href="{{ url_for('admins.messages', status='resolved') }}" class="{{ 'active' if status == 'resolved' }}">Traités</a>
+  </div>
+  <span class="admin-toolbar-count">{{ messages|length }} message(s)</span>
+</div>
+
 <div class="admin-row-list">
   {% for msg in messages %}
   <div class="admin-row">
@@ -10,11 +19,11 @@
       <div class="admin-row-meta">
         <span>{{ msg.created_at | date_fr }}</span>
         <span class="sep">·</span>
-        <span>{{ 'Traité' if msg.is_resolved else 'Non traité' }}</span>
+        <span class="msg-status">{{ 'Traité' if msg.is_resolved else 'Non traité' }}</span>
       </div>
     </div>
     <div class="admin-row-actions">
-      <form method="post" action="{{ url_for('admins.message_toggle_resolved', message_id=msg.id) }}" class="admin-inline-form">
+      <form method="post" action="{{ url_for('admins.message_toggle_resolved', message_id=msg.id) }}" class="admin-inline-form" data-ajax-toggle>
         <button type="submit" class="admin-link">{{ 'Non traité' if msg.is_resolved else 'Traité' }}</button>
       </form>
       <form method="post" action="{{ url_for('admins.message_delete', message_id=msg.id) }}" class="admin-inline-form" data-confirm="Supprimer ce message ?">
@@ -23,7 +32,10 @@
     </div>
   </div>
   {% else %}
-  <p class="admin-empty">Aucun message reçu.</p>
+  <p class="admin-empty">Aucun message{% if status != 'all' %} dans ce filtre{% endif %}.</p>
   {% endfor %}
 </div>
+{% endblock %}
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/admin/messages.js') }}"></script>
 {% endblock %}

@@ -508,32 +508,42 @@ def featured_delete(featured_id):
 @bp_admins.route("/messages")
 @login_required
 def messages():
+    status = request.args.get("status", "all")
     try:
-        rows = (
-            g.db.table("support_messages")
-            .select("*")
-            .order("created_at", desc=True)
-            .limit(200)
-            .execute()
-            .data
-            or []
-        )
+        query = g.db.table("support_messages").select("*")
+        if status == "resolved":
+            query = query.eq("is_resolved", True)
+        elif status == "unresolved":
+            query = query.eq("is_resolved", False)
+        rows = query.order("created_at", desc=True).limit(200).execute().data or []
     except Exception as e:
         flash(f"Erreur de chargement : {e}", "error")
         rows = []
-    return render_template("admin/messages.html", messages=rows)
+    return render_template("admin/messages.html", messages=rows, status=status)
 
 
 @bp_admins.route("/messages/<message_id>/toggle-resolved", methods=["POST"])
 @login_required
 def message_toggle_resolved(message_id):
+    is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
     row = db_ops.get_row(g.db, "support_messages", message_id)
-    if row:
-        try:
-            db_ops.update_row(g.db, "support_messages", message_id, {"is_resolved": not row.get("is_resolved", False)})
-            flash("Statut mis à jour.", "success")
-        except Exception as e:
-            flash(f"Erreur lors de la mise à jour : {e}", "error")
+
+    if not row:
+        if is_ajax:
+            return jsonify(ok=False, error="Message introuvable."), 404
+        flash("Message introuvable.", "error")
+        return redirect(url_for("admins.messages"))
+
+    new_status = not row.get("is_resolved", False)
+    try:
+        db_ops.update_row(g.db, "support_messages", message_id, {"is_resolved": new_status})
+        if is_ajax:
+            return jsonify(ok=True, is_resolved=new_status)
+        flash("Statut mis à jour.", "success")
+    except Exception as e:
+        if is_ajax:
+            return jsonify(ok=False, error=str(e)), 502
+        flash(f"Erreur lors de la mise à jour : {e}", "error")
     return redirect(url_for("admins.messages"))
 
 

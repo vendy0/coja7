@@ -1,18 +1,12 @@
-5. Les search bars (Médias, Rubriques, Sermons) avec recommandations pour rechercher
 11. Apprendre le MarkDown
-14. La gestion des erreurs supabase, r2, b2 et autres... Je sais pas si c déjà fait. 
-15. La communication avec l'équipe depuis l'interface user, un truc dans ce genre :
 17. Télécharger une image et une gallery. C'est déjà là mais faut configurer le truc cors ou jsp quoi parce que je n'ai pas encore acheté le domaine
 18. Mettre des sécurité contre le spam
+21. Mettre le favicone
 19. Commenter tout
-20. Envoyer nouveaux  codes database.py, communications.py et routes.py à Claude
-21. Mzttre le favicone
-
 
 Admin
-29. Mettre les "page_description"
-30. Passer "traité" et "non traité" en js pour ne pas recharger la page  Juste une barre de chargement comme pour les médias. Indiquer de ne pas quitter la page.
 31. Mettre un filtre "traité", "non traité" dans la page des messages
+32. Mettre le meme truc ajax sur les filtres de messages
 
 
 Maths
