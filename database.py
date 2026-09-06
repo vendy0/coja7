@@ -167,7 +167,7 @@ def get_sermon_detail(sermon_id):
     """Récupère les détails complets d'un sermon par son ID."""
     return (
         supabase.table("sermons")
-        .select("*")
+        .select("*, event:events(id, title, start_date, location)")
         .eq("id", sermon_id)
         .single()
         .execute()
