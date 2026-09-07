@@ -32,7 +32,7 @@
 
 <div class="admin-media-grid" id="gallery-media-grid">
   {% for item in media_items %}
-  <div class="admin-media-tile">
+  <div class="admin-media-tile" data-ajax-row>
     {% if item.type == 'video' %}
       <video src="{{ item.media_url }}" controls poster="{{ item.thumbnails_url or '' }}"></video>
     {% else %}
@@ -40,7 +40,7 @@
     {% endif %}
     <div class="admin-media-tile-meta">
       <span>{{ item.credit or '—' }}</span>
-      <form method="post" action="{{ url_for('admins.gallery_media_delete', gallery_id=gallery.id, media_id=item.id) }}" data-confirm="Supprimer ce média ?">
+      <form method="post" action="{{ url_for('admins.gallery_media_delete', gallery_id=gallery.id, media_id=item.id) }}" data-confirm="Supprimer ce média ?" data-ajax-delete>
         <button type="submit" class="admin-link admin-link-danger">Supprimer</button>
       </form>
     </div>

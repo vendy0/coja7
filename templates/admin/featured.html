@@ -4,9 +4,9 @@
 {% block content %}
 <div class="admin-panel">
   <h2>Actuellement à la une</h2>
-  <div class="admin-row-list">
+  <div class="admin-row-list" id="featured-current-list" data-delete-url-template="{{ url_for('admins.featured_delete', featured_id='__ID__') }}">
     {% for item in current %}
-    <div class="admin-row">
+    <div class="admin-row" data-ajax-row>
       <div class="admin-row-main">
         <p class="admin-row-title">{{ item.content_type }}</p>
         <div class="admin-row-meta">
@@ -16,20 +16,19 @@
         </div>
       </div>
       <div class="admin-row-actions">
-        <form method="post" action="{{ url_for('admins.featured_delete', featured_id=item.id) }}" data-confirm="Retirer ce contenu de la une ?">
+        <form method="post" action="{{ url_for('admins.featured_delete', featured_id=item.id) }}" data-confirm="Retirer ce contenu de la une ?" data-ajax-delete>
           <button type="submit" class="admin-link admin-link-danger">Retirer</button>
         </form>
       </div>
     </div>
-    {% else %}
-    <p class="admin-empty">Rien à la une pour l'instant.</p>
     {% endfor %}
   </div>
+  <p class="admin-empty" id="featured-empty-msg" {{ 'hidden' if current }}>Rien à la une pour l'instant.</p>
 </div>
 
 <div class="admin-panel">
   <h2>Ajouter à la une</h2>
-  <form method="post" class="admin-form admin-form-inline" id="featured-form">
+  <form method="post" class="admin-form admin-form-inline" id="featured-form" action="{{ url_for('admins.featured') }}" data-ajax-toggle>
     <div class="admin-field">
       <label for="content_type">Type de contenu</label>
       <select id="content_type" name="content_type">
@@ -67,4 +66,7 @@ document.getElementById('content_type').addEventListener('change', function () {
   }, this);
 });
 </script>
+{% endblock %}
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/admin/admin-featured.js') }}"></script>
 {% endblock %}

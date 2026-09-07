@@ -15,7 +15,7 @@
     <div class="admin-row-main">
       <p class="admin-row-title">{{ admin.first_name }} {{ admin.last_name }}{% if is_self %} <span class="admin-field-help">(toi)</span>{% endif %}</p>
       <div class="admin-row-meta">
-        <span>{{ 'Actif' if admin.is_active else 'Désactivé' }}</span>
+        <span class="admin-status">{{ 'Actif' if admin.is_active else 'Désactivé' }}</span>
       </div>
     </div>
     <div class="admin-row-actions">
@@ -23,13 +23,13 @@
         <span class="admin-field-help">{{ admin.role }} — modifiable par un autre super-admin</span>
       {% else %}
         <form method="post" action="{{ url_for('admins.team_update_role', admin_id=admin.id) }}" class="admin-inline-form">
-          <select name="role" onchange="this.form.submit()">
+          <select name="role" data-ajax-role>
             {% for role in ['editor', 'admin', 'super_admin'] %}
               <option value="{{ role }}" {{ 'selected' if role == admin.role }}>{{ role }}</option>
             {% endfor %}
           </select>
         </form>
-        <form method="post" action="{{ url_for('admins.team_toggle_active', admin_id=admin.id) }}" class="admin-inline-form" data-confirm="{{ 'Désactiver' if admin.is_active else 'Réactiver' }} le compte de {{ admin.first_name }} {{ admin.last_name }} ?">
+        <form method="post" action="{{ url_for('admins.team_toggle_active', admin_id=admin.id) }}" class="admin-inline-form" data-ajax-toggle-active data-confirm="{{ 'Désactiver' if admin.is_active else 'Réactiver' }} le compte de {{ admin.first_name }} {{ admin.last_name }} ?">
           <button type="submit" class="admin-link {{ 'admin-link-danger' if admin.is_active else '' }}">
             {{ 'Désactiver' if admin.is_active else 'Réactiver' }}
           </button>
@@ -41,4 +41,7 @@
   <p class="admin-empty">Aucun compte trouvé.</p>
   {% endfor %}
 </div>
+{% endblock %}
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/admin/admin-team.js') }}"></script>
 {% endblock %}

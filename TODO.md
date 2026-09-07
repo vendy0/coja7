@@ -1,8 +1,10 @@
 11. Apprendre le MarkDown
 17. Télécharger une image et une gallery. C'est déjà là mais faut configurer le truc cors ou jsp quoi parce que je n'ai pas encore acheté le domaine
 18. Mettre des sécurité contre le spam
+20. Mettre la gallery correspondante dans la page d'un évènement
 21. Mettre le favicone
 19. Commenter tout
+20. Ajouter une colonne contact dans les messages pour pouvoir répondre aux utilisateurs. 
 
 Admin
 31. Mettre un filtre "traité", "non traité" dans la page des messages

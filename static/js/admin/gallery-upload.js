@@ -201,6 +201,7 @@
 
       const tile = document.createElement("div");
       tile.className = "admin-media-tile";
+      tile.setAttribute("data-ajax-row", "");
       const mediaHtml = item.type === "video"
         ? '<video src="' + item.media_url + '" controls poster="' + (item.thumbnails_url || "") + '"></video>'
         : '<img src="' + (item.thumbnails_url || item.media_url) + '" alt="">';
@@ -208,13 +209,13 @@
         mediaHtml +
         '<div class="admin-media-tile-meta">' +
         "<span>" + escapeHtml(item.credit || "—") + "</span>" +
-        '<form method="post" action="' + deleteUrlTemplate.replace("__ID__", item.id) + '" data-confirm="Supprimer ce média ?">' +
+        '<form method="post" action="' + deleteUrlTemplate.replace("__ID__", item.id) + '" data-confirm="Supprimer ce média ?" data-ajax-delete>' +
         '<button type="submit" class="admin-link admin-link-danger">Supprimer</button>' +
         "</form></div>";
       gridEl.prepend(tile);
-      // La confirmation (data-confirm) est gérée globalement par admin.js,
-      // par délégation — pas besoin de la rebrancher pour ce tile ajouté
-      // dynamiquement.
+      // La confirmation (data-confirm) et la suppression AJAX
+      // (data-ajax-delete) sont gérées globalement par admin.js, par
+      // délégation — pas besoin de rebrancher quoi que ce soit ici.
     }
   });
 })();

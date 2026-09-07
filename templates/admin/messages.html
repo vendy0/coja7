@@ -13,7 +13,7 @@
 
 <div class="admin-row-list">
   {% for msg in messages %}
-  <div class="admin-row">
+  <div class="admin-row" data-ajax-row>
     <div class="admin-row-main">
       <p class="admin-row-title admin-row-title-wrap">{{ msg.message }}</p>
       <div class="admin-row-meta">
@@ -26,7 +26,7 @@
       <form method="post" action="{{ url_for('admins.message_toggle_resolved', message_id=msg.id) }}" class="admin-inline-form" data-ajax-toggle>
         <button type="submit" class="admin-link">{{ 'Non traité' if msg.is_resolved else 'Traité' }}</button>
       </form>
-      <form method="post" action="{{ url_for('admins.message_delete', message_id=msg.id) }}" class="admin-inline-form" data-confirm="Supprimer ce message ?">
+      <form method="post" action="{{ url_for('admins.message_delete', message_id=msg.id) }}" class="admin-inline-form" data-confirm="Supprimer ce message ?" data-ajax-delete>
         <button type="submit" class="admin-link admin-link-danger">Supprimer</button>
       </form>
     </div>

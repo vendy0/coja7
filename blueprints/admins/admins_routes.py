@@ -330,10 +330,15 @@ def content_delete(content_key, row_id):
     ct = get_content_type(content_key)
     if not ct:
         abort(404)
+    is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
     try:
         db_ops.delete_row(g.db, ct["table"], row_id)
+        if is_ajax:
+            return jsonify(ok=True)
         flash(f"{ct['label_singular'].capitalize()} supprimé·e.", "success")
     except Exception as e:
+        if is_ajax:
+            return jsonify(ok=False, error=str(e)), 502
         flash(f"Erreur lors de la suppression : {e}", "error")
     return redirect(url_for("admins.content_list", content_key=content_key))
 
@@ -446,15 +451,22 @@ def gallery_media_upload(gallery_id):
 @bp_admins.route("/galleries/<gallery_id>/media/<media_id>/delete", methods=["POST"])
 @login_required
 def gallery_media_delete(gallery_id, media_id):
+    is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
     item = db_ops.get_row(g.db, "media_items", media_id)
     if item:
         try:
             db_ops.delete_file_by_url(g.db, item.get("media_url"))
             db_ops.delete_file_by_url(g.db, item.get("thumbnails_url"))
             db_ops.delete_row(g.db, "media_items", media_id)
+            if is_ajax:
+                return jsonify(ok=True)
             flash("Média supprimé.", "success")
         except Exception as e:
+            if is_ajax:
+                return jsonify(ok=False, error=str(e)), 502
             flash(f"Erreur lors de la suppression : {e}", "error")
+    elif is_ajax:
+        return jsonify(ok=False, error="Média introuvable."), 404
     return redirect(url_for("admins.gallery_media", gallery_id=gallery_id))
 
 
@@ -472,12 +484,14 @@ FEATURED_TYPE_TABLE = {
 @bp_admins.route("/featured", methods=["GET", "POST"])
 @login_required
 def featured():
+    is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
+
     if request.method == "POST":
         content_type = request.form.get("content_type")
         content_id = request.form.get("content_id")
         if content_type in FEATURED_TYPE_TABLE and content_id:
             try:
-                g.db.table("featured_content").upsert(
+                result = g.db.table("featured_content").upsert(
                     {
                         "content_type": content_type,
                         "content_id": content_id,
@@ -485,9 +499,16 @@ def featured():
                     },
                     on_conflict="content_type, content_id"  # <--- Spécifier les deux colonnes de la contrainte
                 ).execute()
+                if is_ajax:
+                    new_row = result.data[0] if result.data else None
+                    return jsonify(ok=True, item=new_row)
                 flash("Contenu ajouté à la une.", "success")
             except Exception as e:
+                if is_ajax:
+                    return jsonify(ok=False, error=str(e)), 502
                 flash(f"Erreur lors de l'ajout à la une : {e}", "error")
+        elif is_ajax:
+            return jsonify(ok=False, error="Choisis un type et un contenu."), 400
         return redirect(url_for("admins.featured"))
 
     try:
@@ -511,10 +532,15 @@ def featured():
 @bp_admins.route("/featured/<featured_id>/delete", methods=["POST"])
 @login_required
 def featured_delete(featured_id):
+    is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
     try:
         db_ops.delete_row(g.db, "featured_content", featured_id)
+        if is_ajax:
+            return jsonify(ok=True)
         flash("Retiré de la une.", "success")
     except Exception as e:
+        if is_ajax:
+            return jsonify(ok=False, error=str(e)), 502
         flash(f"Erreur lors du retrait : {e}", "error")
     return redirect(url_for("admins.featured"))
 
@@ -568,10 +594,15 @@ def message_toggle_resolved(message_id):
 @bp_admins.route("/messages/<message_id>/delete", methods=["POST"])
 @login_required
 def message_delete(message_id):
+    is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
     try:
         db_ops.delete_row(g.db, "support_messages", message_id)
+        if is_ajax:
+            return jsonify(ok=True)
         flash("Message supprimé.", "success")
     except Exception as e:
+        if is_ajax:
+            return jsonify(ok=False, error=str(e)), 502
         flash(f"Erreur lors de la suppression : {e}", "error")
     return redirect(url_for("admins.messages"))
 
@@ -594,30 +625,55 @@ def team():
 @bp_admins.route("/team/<admin_id>/toggle-active", methods=["POST"])
 @super_admin_required
 def team_toggle_active(admin_id):
+    is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
     if admin_id == session.get("admin_id"):
+        if is_ajax:
+            return jsonify(ok=False, error="Tu ne peux pas désactiver ton propre compte."), 403
         flash("Tu ne peux pas désactiver ton propre compte.", "error")
         return redirect(url_for("admins.team"))
+
     row = db_ops.get_row(g.db, "admins", admin_id)
-    if row:
-        try:
-            db_ops.update_row(g.db, "admins", admin_id, {"is_active": not row.get("is_active", True)})
-            flash("Statut mis à jour.", "success")
-        except Exception as e:
-            flash(f"Erreur lors de la mise à jour : {e}", "error")
+    if not row:
+        if is_ajax:
+            return jsonify(ok=False, error="Compte introuvable."), 404
+        return redirect(url_for("admins.team"))
+
+    new_status = not row.get("is_active", True)
+    try:
+        db_ops.update_row(g.db, "admins", admin_id, {"is_active": new_status})
+        if is_ajax:
+            return jsonify(ok=True, is_active=new_status)
+        flash("Statut mis à jour.", "success")
+    except Exception as e:
+        if is_ajax:
+            return jsonify(ok=False, error=str(e)), 502
+        flash(f"Erreur lors de la mise à jour : {e}", "error")
     return redirect(url_for("admins.team"))
 
 
 @bp_admins.route("/team/<admin_id>/role", methods=["POST"])
 @super_admin_required
 def team_update_role(admin_id):
+    is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
     if admin_id == session.get("admin_id"):
+        if is_ajax:
+            return jsonify(ok=False, error="Tu ne peux pas changer ton propre rôle."), 403
         flash("Tu ne peux pas changer ton propre rôle.", "error")
         return redirect(url_for("admins.team"))
+
     role = request.form.get("role")
-    if role in ("super_admin", "admin", "editor"):
-        try:
-            db_ops.update_row(g.db, "admins", admin_id, {"role": role})
-            flash("Rôle mis à jour.", "success")
-        except Exception as e:
-            flash(f"Erreur lors de la mise à jour : {e}", "error")
+    if role not in ("super_admin", "admin", "editor"):
+        if is_ajax:
+            return jsonify(ok=False, error="Rôle invalide."), 400
+        return redirect(url_for("admins.team"))
+
+    try:
+        db_ops.update_row(g.db, "admins", admin_id, {"role": role})
+        if is_ajax:
+            return jsonify(ok=True, role=role)
+        flash("Rôle mis à jour.", "success")
+    except Exception as e:
+        if is_ajax:
+            return jsonify(ok=False, error=str(e)), 502
+        flash(f"Erreur lors de la mise à jour : {e}", "error")
     return redirect(url_for("admins.team"))

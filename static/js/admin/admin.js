@@ -49,18 +49,51 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!form || form.dataset.confirmed === "true") return;
     e.preventDefault();
 
+    function proceed() {
+      form.dataset.confirmed = "true";
+
+      // Suppression générique en AJAX (data-ajax-delete) : retire la ligne
+      // du DOM sans recharger la page, au lieu de soumettre normalement.
+      // Le repli (form.submit() classique) reste pour tout le reste.
+      if ("ajaxDelete" in form.dataset) {
+        const row = form.closest("[data-ajax-row]");
+        const btn = form.querySelector("button");
+        const originalLabel = btn ? btn.textContent : "";
+        if (btn) { btn.disabled = true; btn.textContent = "…"; }
+
+        fetch(form.action, {
+          method: "POST",
+          headers: { "X-Requested-With": "XMLHttpRequest" },
+        })
+          .then(function (res) { return res.json(); })
+          .then(function (data) {
+            if (data.ok) {
+              if (row) row.remove();
+            } else {
+              if (btn) { btn.disabled = false; btn.textContent = originalLabel; }
+              alert(data.error || "Erreur lors de la suppression.");
+            }
+          })
+          .catch(function () {
+            if (btn) { btn.disabled = false; btn.textContent = originalLabel; }
+            alert("Connexion interrompue.");
+          });
+        return;
+      }
+
+      const loader = document.getElementById("admin-page-loader");
+      if (loader) loader.hidden = false;
+      form.submit();
+    }
+
     if (typeof window.adminConfirm !== "function") {
       // Filet de sécurité si admin-modal.js n'a pas chargé
-      if (window.confirm(form.dataset.confirm)) form.submit();
+      if (window.confirm(form.dataset.confirm)) proceed();
       return;
     }
 
     window.adminConfirm(form.dataset.confirm).then(function (ok) {
-      if (!ok) return;
-      form.dataset.confirmed = "true";
-      const loader = document.getElementById("admin-page-loader");
-      if (loader) loader.hidden = false;
-      form.submit();
+      if (ok) proceed();
     });
   });
 

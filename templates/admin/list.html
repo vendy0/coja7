@@ -13,7 +13,7 @@
 <div class="admin-row-list">
   {% for row in rows %}
   {% set title_field, title_label = ct.list_columns[0] %}
-  <div class="admin-row">
+  <div class="admin-row" data-ajax-row>
     <div class="admin-row-main">
       <p class="admin-row-title">{{ row.get(title_field) or ct.label_singular }}</p>
       <div class="admin-row-meta">
@@ -32,7 +32,7 @@
         <a href="{{ url_for('admins.gallery_media', gallery_id=row.id) }}" class="admin-link">Médias</a>
       {% endif %}
       <a href="{{ url_for('admins.content_edit', content_key=ct.key, row_id=row.id) }}" class="admin-link">Modifier</a>
-      <form method="post" action="{{ url_for('admins.content_delete', content_key=ct.key, row_id=row.id) }}" class="admin-inline-form" data-confirm="Supprimer définitivement {{ ct.label_singular }} « {{ row.title or row.id }} » ?">
+      <form method="post" action="{{ url_for('admins.content_delete', content_key=ct.key, row_id=row.id) }}" class="admin-inline-form" data-confirm="Supprimer définitivement {{ ct.label_singular }} « {{ row.title or row.id }} » ?" data-ajax-delete>
         <button type="submit" class="admin-link admin-link-danger">Supprimer</button>
       </form>
     </div>
