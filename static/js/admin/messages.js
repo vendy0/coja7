@@ -43,4 +43,77 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
   });
+
+  // -------------------------------------------------------------------
+  // Filtres "Tous / Non traités / Traités" en AJAX (voir messages.html)
+  // -------------------------------------------------------------------
+  const list = document.getElementById("messages-list");
+  const tabs = document.querySelectorAll(".admin-filter-tabs a");
+  const countEl = document.querySelector(".admin-toolbar-count");
+  if (!list || !tabs.length) return;
+
+  const toggleTemplate = list.dataset.toggleUrlTemplate;
+  const deleteTemplate = list.dataset.deleteUrlTemplate;
+
+  function escapeHtml(s) {
+    const d = document.createElement("div");
+    d.textContent = s == null ? "" : s;
+    return d.innerHTML;
+  }
+
+  function buildRow(msg) {
+    const row = document.createElement("div");
+    row.className = "admin-row";
+    row.setAttribute("data-ajax-row", "");
+    row.innerHTML =
+      '<div class="admin-row-main">' +
+      '<p class="admin-row-title admin-row-title-wrap">' + escapeHtml(msg.message) + "</p>" +
+      '<div class="admin-row-meta">' +
+      "<span>" + escapeHtml(msg.created_at_display) + "</span>" +
+      '<span class="sep">·</span>' +
+      '<span class="msg-status">' + (msg.is_resolved ? "Traité" : "Non traité") + "</span>" +
+      (msg.contact ? '<span class="sep">·</span><span>' + escapeHtml(msg.contact) + "</span>" : "") +
+      "</div></div>" +
+      '<div class="admin-row-actions">' +
+      '<form method="post" action="' + toggleTemplate.replace("__ID__", msg.id) + '" class="admin-inline-form" data-ajax-toggle>' +
+      '<button type="submit" class="admin-link">' + (msg.is_resolved ? "Non traité" : "Traité") + "</button>" +
+      "</form>" +
+      '<form method="post" action="' + deleteTemplate.replace("__ID__", msg.id) + '" class="admin-inline-form" data-confirm="Supprimer ce message ?" data-ajax-delete>' +
+      '<button type="submit" class="admin-link admin-link-danger">Supprimer</button>' +
+      "</form></div>";
+    return row;
+  }
+
+  function render(messages, status) {
+    list.innerHTML = "";
+    if (!messages.length) {
+      const p = document.createElement("p");
+      p.className = "admin-empty";
+      p.textContent = "Aucun message" + (status !== "all" ? " dans ce filtre" : "") + ".";
+      list.appendChild(p);
+    } else {
+      messages.forEach(function (m) { list.appendChild(buildRow(m)); });
+    }
+    if (countEl) countEl.textContent = messages.length + " message(s)";
+  }
+
+  tabs.forEach(function (tab) {
+    tab.addEventListener("click", function (e) {
+      e.preventDefault();
+      const url = tab.href;
+
+      tabs.forEach(function (t) { t.classList.remove("active"); });
+      tab.classList.add("active");
+
+      fetch(url, { headers: { "X-Requested-With": "XMLHttpRequest" } })
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+          if (data.ok) {
+            render(data.messages, data.status);
+            history.pushState(null, "", url);
+          }
+        })
+        .catch(function () { /* on laisse l'affichage tel quel en cas d'échec */ });
+    });
+  });
 });

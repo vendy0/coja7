@@ -8,6 +8,7 @@ function closeSupportModal() {
 
 document.addEventListener("DOMContentLoaded", function () {
   const textarea = document.getElementById("support_message");
+  const input = document.getElementById("support_contact");
   const counter = document.getElementById("char-counter");
   const form = document.getElementById("supportForm");
   const feedback = document.getElementById("support-feedback");
@@ -28,6 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
   form.addEventListener("submit", function (e) {
     e.preventDefault();
     const message = textarea.value.trim();
+    const contact = input.value.trim();
     if (!message) return;
 
     const sendBtn = form.querySelector(".btn-send");
@@ -37,7 +39,7 @@ document.addEventListener("DOMContentLoaded", function () {
     fetch(form.dataset.action, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: "message=" + encodeURIComponent(message),
+      body: `message=" + ${encodeURIComponent(message)}&contact=${encodeURIComponent(contact)}`,
     })
       .then(function (res) {
         return res.json().then(function (data) {
@@ -50,6 +52,7 @@ document.addEventListener("DOMContentLoaded", function () {
           feedback.className = "support-feedback success";
           feedback.hidden = false;
           textarea.value = "";
+          input.value = "";
           counter.textContent = "0 / 600";
           setTimeout(function () {
             feedback.hidden = true;

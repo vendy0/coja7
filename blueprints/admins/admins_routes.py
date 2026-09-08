@@ -157,6 +157,19 @@ def content_list(content_key):
     return render_template("admin/list.html", ct=ct, rows=rows, query=query)
 
 
+def _format_date_fr(iso_string):
+    """Formate une date ISO en JJ/MM/AAAA HH:MM — utilisé pour les réponses
+    JSON (voir messages(), appelée en AJAX) où le filtre Jinja date_fr des
+    templates ne s'applique pas."""
+    if not iso_string:
+        return ""
+    try:
+        dt = datetime.fromisoformat(str(iso_string).replace("Z", "+00:00"))
+        return dt.strftime("%d/%m/%Y %H:%M")
+    except (ValueError, TypeError):
+        return str(iso_string)
+
+
 def _apply_uploads(ct, payload):
     """Traite les champs de type image/audio/pdf du formulaire : upload
     vers R2 ou B2, puis injection de l'URL obtenue dans le payload.
@@ -553,6 +566,7 @@ def featured_delete(featured_id):
 @login_required
 def messages():
     status = request.args.get("status", "all")
+    is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
     try:
         query = g.db.table("support_messages").select("*")
         if status == "resolved":
@@ -561,8 +575,16 @@ def messages():
             query = query.eq("is_resolved", False)
         rows = query.order("created_at", desc=True).limit(200).execute().data or []
     except Exception as e:
+        if is_ajax:
+            return jsonify(ok=False, error=str(e)), 502
         flash(f"Erreur de chargement : {e}", "error")
         rows = []
+
+    if is_ajax:
+        for r in rows:
+            r["created_at_display"] = _format_date_fr(r.get("created_at"))
+        return jsonify(ok=True, messages=rows, status=status)
+
     return render_template("admin/messages.html", messages=rows, status=status)
 
 

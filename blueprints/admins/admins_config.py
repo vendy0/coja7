@@ -48,7 +48,7 @@ CONTENT_TYPES = {
             {"name": "department", "label": "Département", "type": "text"},
             {
                 "name": "status", "label": "Statut", "type": "select",
-                "options": ["upcoming", "ongoing", "past", "cancelled"],
+                "options": {"upcoming": "À venir", "ongoing": "En cours", "past": "Passé", "cancelled": "Annulé"},
                 "default": "upcoming",
             },
             {"name": "hero_media_url", "label": "Image de couverture", "type": "image"},
@@ -72,14 +72,14 @@ CONTENT_TYPES = {
             {"name": "reference_number", "label": "Numéro de référence", "type": "text"},
             {
                 "name": "federation", "label": "Fédération", "type": "select",
-                "options": ["fedchas", "mipah"],
+                "options": {"fedchas": "FEDCHAS", "mipah": "MIPAH"},
             },
             {"name": "department", "label": "Département", "type": "text"},
             {"name": "author", "label": "Auteur", "type": "text"},
             {"name": "content", "label": "Contenu", "type": "richtext"},
             {
                 "name": "hero_media_type", "label": "Type du média principal", "type": "select",
-                "options": ["image", "video"],
+                "options": {"image": "Image", "video": "Vidéo"},
             },
             {"name": "hero_media_url", "label": "Média principal", "type": "image", "accept": "image/*,video/*", "auto_type_field": "hero_media_type"},
             {"name": "hero_media_description", "label": "Légende du média", "type": "text"},
@@ -139,7 +139,7 @@ CONTENT_TYPES = {
             {"name": "content", "label": "Contenu", "type": "richtext"},
             {
                 "name": "hero_media_type", "label": "Type du média principal", "type": "select",
-                "options": ["image", "video"],
+                "options": {"image": "Image", "video": "Vidéo"},
             },
             {"name": "hero_media_url", "label": "Média principal", "type": "image", "accept": "image/*,video/*", "auto_type_field": "hero_media_type"},
             {"name": "pdf_url", "label": "Fichier PDF", "type": "pdf"},

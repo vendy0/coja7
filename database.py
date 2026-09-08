@@ -238,16 +238,16 @@ def get_event_detail(event_id):
     """Récupère un événement par son UUID (page de détail /calendar/event/<id>)."""
     return (
         supabase.table("events")
-        .select("*")
+        .select("*, galleries(id, cover_image_url)")
         .eq("id", event_id)
         .single()
         .execute()
         .data
     )
     
-def create_support_message(message):
+def create_support_message(message, contact=None):
     """Enregistre un message envoyé depuis le bouton de contact public."""
     supabase.table("support_messages").insert(
-        {"message": message}, returning="minimal"
+        {"message": message, "contact": contact}, returning="minimal"
     ).execute()
     return True

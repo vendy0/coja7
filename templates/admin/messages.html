@@ -11,7 +11,9 @@
   <span class="admin-toolbar-count">{{ messages|length }} message(s)</span>
 </div>
 
-<div class="admin-row-list">
+<div class="admin-row-list" id="messages-list"
+     data-toggle-url-template="{{ url_for('admins.message_toggle_resolved', message_id='__ID__') }}"
+     data-delete-url-template="{{ url_for('admins.message_delete', message_id='__ID__') }}">
   {% for msg in messages %}
   <div class="admin-row" data-ajax-row>
     <div class="admin-row-main">
@@ -20,6 +22,10 @@
         <span>{{ msg.created_at | date_fr }}</span>
         <span class="sep">·</span>
         <span class="msg-status">{{ 'Traité' if msg.is_resolved else 'Non traité' }}</span>
+        {% if msg.contact %}
+        <span class="sep">·</span>
+        <span>{{ msg.contact }}</span>
+        {% endif %}
       </div>
     </div>
     <div class="admin-row-actions">

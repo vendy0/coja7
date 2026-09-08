@@ -48,8 +48,8 @@
       <select id="f-{{ field.name }}" name="{{ field.name }}">
         {% set current = (row.get(field.name) if row else field.get('default')) %}
         <option value="">—</option>
-        {% for opt in field.options %}
-          <option value="{{ opt }}" {{ 'selected' if opt == current }}>{{ opt }}</option>
+        {% for key, value in field.options.items() %}
+          <option value="{{ key }}" {{ 'selected' if key == current }}>{{ value }}</option>
         {% endfor %}
       </select>
 

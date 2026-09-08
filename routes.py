@@ -291,14 +291,16 @@ def send_message_route():
     _last_message_by_ip[ip] = now
 
     message = (request.form.get("message") or "").strip()
+    contact = (request.form.get("contact") or "").strip()[:150]
     if not message:
         return jsonify(ok=False, error="Message vide."), 400
-    if len(message) > 400:
+    if len(message) > 600:
         return jsonify(ok=False, error="Message trop long."), 400
 
     try:
-        create_support_message(message)
+        create_support_message(message, contact or None)
         return jsonify(ok=True)
+        
     except Exception as e:
         print(f"Erreur send_message_route: {e}")
         return jsonify(ok=False, error="Erreur d'envoi, réessaie plus tard."), 502
