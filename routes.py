@@ -19,6 +19,18 @@ app.register_blueprint(bp_admins)
 
 app.secret_key = os.environ["FLASK_SECRET_KEY"]
 
+# En production (FLASK_ENV=production dans l'environnement du serveur),
+# active les cookies "Secure" (HTTPS obligatoire pour les envoyer) et une
+# limite de taille d'upload. En dev/local sans HTTPS, SESSION_COOKIE_SECURE
+# doit rester False, sinon la session ne fonctionne plus du tout.
+IS_PRODUCTION = os.environ.get("FLASK_ENV") == "production"
+app.config.update(
+    SESSION_COOKIE_SECURE=IS_PRODUCTION,
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE="Lax",
+    MAX_CONTENT_LENGTH=80 * 1024 * 1024,  # 80 Mo — ajuste selon la taille réelle de tes plus gros fichiers (audio, vidéo)
+)
+
 LAST_NEWS_PAGE_SIZE = 9
 
 MOIS_FR = [

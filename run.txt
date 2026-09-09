@@ -1,0 +1,23 @@
+import subprocess
+import sys
+import os
+
+if __name__ == "__main__":
+    # Pas d'équivalent de initialiser_bdd() ici : les tables Supabase sont
+    # déjà créées (via le SQL exécuté manuellement dans l'éditeur Supabase),
+    # rien à initialiser au démarrage contrairement à une base SQLite locale.
+    cmd = [
+        sys.executable, "-m", "gunicorn",
+        "-c", "gunicorn_conf.py",
+        "routes:app",
+    ]
+
+    port = os.environ.get("PORT", "8000")
+    print(f"🚀 Démarrage de COJA7 avec Gunicorn sur le port {port}...")
+
+    try:
+        subprocess.run(cmd, check=True)
+    except Exception as e:
+        print(f"❌ Une erreur est survenue lors du lancement de Gunicorn : {e}")
+        print(f"DEBUG: Python Executable: {sys.executable}")
+        sys.exit(1)
