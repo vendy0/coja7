@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const link = e.target.closest("a[href]");
     if (!link) return;
     if (link.target === "_blank" || link.hasAttribute("download")) return;
+    if ("ajaxToggle" in link.dataset) return; // gère sa propre navigation (AJAX), voir messages.js
     const href = link.getAttribute("href") || "";
     if (href.startsWith("#") || href.startsWith("javascript:")) return;
     try {
@@ -31,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function () {
       // transition lui-même juste avant l'envoi réel. Les formulaires
       // marqués data-ajax-toggle gèrent aussi tout eux-mêmes (aucune
       // navigation réelle n'a lieu, donc l'écran ne disparaîtrait jamais).
-      if (!form.dataset.confirm && !("ajaxToggle" in form.dataset)) show();
+      if (!form.dataset.confirm && !form.dataset.ajaxToggle) show();
     });
   });
 

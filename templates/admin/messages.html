@@ -4,9 +4,9 @@
 {% block content %}
 <div class="admin-toolbar">
   <div class="admin-filter-tabs">
-    <a href="{{ url_for('admins.messages', status='all') }}" class="{{ 'active' if status == 'all' }}">Tous</a>
-    <a href="{{ url_for('admins.messages', status='unresolved') }}" class="{{ 'active' if status == 'unresolved' }}">Non traités</a>
-    <a href="{{ url_for('admins.messages', status='resolved') }}" class="{{ 'active' if status == 'resolved' }}">Traités</a>
+    <a href="{{ url_for('admins.messages', status='all') }}" class="{{ 'active' if status == 'all' }}" data-ajax-toggle>Tous</a>
+    <a href="{{ url_for('admins.messages', status='unresolved') }}" class="{{ 'active' if status == 'unresolved' }}" data-ajax-toggle>Non traités</a>
+    <a href="{{ url_for('admins.messages', status='resolved') }}" class="{{ 'active' if status == 'resolved' }}" data-ajax-toggle>Traités</a>
   </div>
   <span class="admin-toolbar-count">{{ messages|length }} message(s)</span>
 </div>

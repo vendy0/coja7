@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", function () {
     fetch(form.dataset.action, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: `message=" + ${encodeURIComponent(message)}&contact=${encodeURIComponent(contact)}`,
+      body: `message=${encodeURIComponent(message)}&contact=${encodeURIComponent(contact)}`,
     })
       .then(function (res) {
         return res.json().then(function (data) {

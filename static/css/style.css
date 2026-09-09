@@ -1305,7 +1305,9 @@ nav a.active::before{ content:""; position:absolute; top:0; left:0; right:0; hei
   margin: 0 0 16px;
 }
 .textarea-wrapper{ position: relative; }
-.support-modal-content textarea{
+
+.support-modal-content textarea,
+.support-modal-content input[type="text"]{
   width: 100%;
   padding: 11px;
   border: 1.5px solid var(--hairline);
@@ -1313,9 +1315,12 @@ nav a.active::before{ content:""; position:absolute; top:0; left:0; right:0; hei
   resize: none;
   font-family: inherit;
   font-size: 0.9rem;
-  margin-bottom: 4px;
+  margin-bottom: 10px;
 }
-.support-modal-content textarea:focus{ outline: none; border-color: var(--blue); }
+.support-modal-content textarea{ margin-bottom: 4px; }
+.support-modal-content textarea:focus,
+.support-modal-content input[type="text"]:focus{ outline: none; border-color: var(--blue); }
+
 #char-counter{
   text-align: right;
   font-family: 'IBM Plex Mono', monospace;
