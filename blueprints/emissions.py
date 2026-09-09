@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, jsonify
 import re
-from database import get_emissions_count, get_all_rubrics, get_all_sermons, get_sermon_detail
+from database import get_emissions_count, get_all_rubrics, get_all_sermons, get_sermon_detail, get_sermons_search_index, get_rubrics_search_index
 # Création du Blueprint
 bp_emissions = Blueprint('emissions', __name__, url_prefix='/emissions')
 
@@ -72,3 +72,11 @@ def sermon_detail(sermon_id):
         page_description=_plain_text_excerpt(sermon.get("content"), 160),
         active_page="emissions"
     )
+
+@bp_emissions.route("/rubrics/search-index")
+def rubrics_search_index():
+    return jsonify(items=get_rubrics_search_index())
+
+@bp_emissions.route("/sermons/search-index")
+def sermons_search_index():
+    return jsonify(items=get_sermons_search_index())

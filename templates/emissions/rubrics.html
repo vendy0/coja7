@@ -22,6 +22,15 @@
       <p>Retrouvez nos séries d'enseignements, conseils pratiques et chroniques spirituelles en vidéo.</p>
     </div>
 
+    <div class="search-bar-wrap">
+      <input type="search" class="search-bar-input" placeholder="Rechercher une rubrique…"
+             data-search-index-url="{{ url_for('emissions.rubrics_search_index') }}"
+             data-search-mode="filter"
+             data-search-keys="title,category,speaker"
+             data-search-grid-id="rubrics-grid"
+             data-search-load-more-selector="[data-load-more]">
+    </div>
+
     <div class="video-grid" id="rubrics-grid">
       {% if rubrics %}
         {% include "emissions/_rubric_cards.html" %}

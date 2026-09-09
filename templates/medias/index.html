@@ -7,12 +7,14 @@
       <p>Photos & vidéos des événements COJA7</p>
     </div>
 
-    <div class="filters">
-      <span class="active">Tous</span>
-      <span>Aventuriers</span>
-      <span>Conquérants</span>
-      <span>Ambassadeurs</span>
-      <span>Cultes</span>
+    <div class="search-bar-wrap">
+      <input type="search" class="search-bar-input" placeholder="Rechercher une galerie…"
+             data-search-index-url="{{ url_for('medias.galleries_search_index') }}"
+             data-search-mode="dropdown"
+             data-search-keys="title,department"
+             data-search-list-id="galleries-search-suggestions"
+             data-search-url-template="{{ url_for('medias.galerie_detail', gallery_id='__ID__') }}">
+      <div class="search-suggestions" id="galleries-search-suggestions" hidden></div>
     </div>
 
     <div class="gallery-grid" id="gallery-grid">

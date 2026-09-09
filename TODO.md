@@ -1,11 +1,10 @@
 11. Apprendre le MarkDown
 17. Télécharger une image et une gallery. C'est déjà là mais faut configurer le truc cors ou jsp quoi parce que je n'ai pas encore acheté le domaine
-20. Mettre la gallery correspondante dans la page d'un évènement
 19. Commenter tout
-20. Ajouter une colonne contact dans les messages pour pouvoir répondre aux utilisateurs. 
+21. Et si la recherche ne correspond à aucun élément de ceux affichés. Par exemple c'est dans une autre page (offset)
 
 Admin
-32. Mettre le meme truc ajax sur les filtres de messages (traités, non traités...)
+33. Mettre un indicateur de chargement en changeant de filtre sur les messages
 
 
 Maths

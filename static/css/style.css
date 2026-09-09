@@ -1305,7 +1305,6 @@ nav a.active::before{ content:""; position:absolute; top:0; left:0; right:0; hei
   margin: 0 0 16px;
 }
 .textarea-wrapper{ position: relative; }
-
 .support-modal-content textarea,
 .support-modal-content input[type="text"]{
   width: 100%;
@@ -1320,7 +1319,6 @@ nav a.active::before{ content:""; position:absolute; top:0; left:0; right:0; hei
 .support-modal-content textarea{ margin-bottom: 4px; }
 .support-modal-content textarea:focus,
 .support-modal-content input[type="text"]:focus{ outline: none; border-color: var(--blue); }
-
 #char-counter{
   text-align: right;
   font-family: 'IBM Plex Mono', monospace;
@@ -1356,3 +1354,75 @@ nav a.active::before{ content:""; position:absolute; top:0; left:0; right:0; hei
 .btn-cancel{ background: var(--paper-dim); color: var(--ink-soft); }
 .btn-send{ background: var(--navy); color: var(--paper); }
 .btn-send:disabled{ opacity: 0.6; cursor: default; }
+
+/* ---------------------------------------------------------------------
+   19. BARRE DE RECHERCHE — search.js (sermons, galeries, rubriques)
+   --------------------------------------------------------------------- */
+.search-bar-wrap{
+  position: relative;
+  margin: 0 20px 16px;
+}
+.search-bar-input{
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid var(--hairline);
+  border-radius: 8px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 13.5px;
+  background: var(--paper);
+  color: var(--ink);
+}
+.search-bar-input:focus{ outline: none; border-color: var(--blue); }
+.search-bar-input::-webkit-search-cancel-button{ cursor: pointer; }
+
+.search-suggestions{
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  margin-top: 4px;
+  background: var(--paper);
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(10,28,64,0.12);
+  max-height: 260px;
+  overflow-y: auto;
+}
+.search-suggestion{
+  display: block;
+  padding: 10px 14px;
+  text-decoration: none;
+  color: inherit;
+  border-bottom: 1px solid var(--hairline);
+}
+.search-suggestion:last-child{ border-bottom: none; }
+.search-suggestion:active{ background: var(--paper-dim); }
+.search-suggestion-title{
+  display: block;
+  font-family: 'Source Serif 4', serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--navy);
+}
+.search-suggestion-meta{
+  display: block;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10.5px;
+  color: var(--ink-soft);
+  margin-top: 2px;
+}
+.search-suggestion-empty{
+  padding: 10px 14px;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  font-style: italic;
+}
+.search-no-results{
+  padding: 30px 20px;
+  text-align: center;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 13px;
+  color: var(--ink-soft);
+  width: 100%;
+}

@@ -2,7 +2,7 @@ import io
 import zipfile
 import requests
 from flask import Blueprint, render_template, request, jsonify, send_file, abort
-from database import get_all_galleries, get_gallery_detail
+from database import get_all_galleries, get_gallery_detail, get_galleries_search_index
 
 # Création du Blueprint
 bp_medias = Blueprint('medias', __name__, url_prefix='/medias')
@@ -98,3 +98,7 @@ def download_gallery(gallery_id):
         as_attachment=True,
         download_name=zip_filename
     )
+
+@bp_medias.route("/search-index")
+def galleries_search_index():
+    return jsonify(items=get_galleries_search_index())

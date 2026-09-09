@@ -174,6 +174,34 @@ def get_sermon_detail(sermon_id):
         .data
     )
 
+def get_rubrics_search_index():
+    """Index léger pour la recherche côté client (Fuse.js) — tous les titres, pas de pagination."""
+    return (
+        supabase.table("rubrics")
+        .select("id, title, category, speaker, youtube_id")
+        .order("published_at", desc=True)
+        .execute()
+        .data
+    )
+
+def get_sermons_search_index():
+    return (
+        supabase.table("sermons")
+        .select("id, title, subtitle, reference")
+        .order("published_at", desc=True)
+        .execute()
+        .data
+    )
+
+def get_galleries_search_index():
+    return (
+        supabase.table("galleries")
+        .select("id, title, department")
+        .order("event_date", desc=True)
+        .execute()
+        .data
+    )
+    
 def get_all_galleries(limit=12, offset=0):
     """Récupère les galeries (avec leurs médias associés pour compter photos/vidéos), paginées (limit/offset)."""
     response = (
