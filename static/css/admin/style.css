@@ -294,6 +294,7 @@ a{ color: inherit; text-decoration: none; }
 .admin-filter-tabs a.active{ background: var(--a-navy); color: var(--a-paper); border-color: var(--a-navy); }
 
 .admin-row-list{ border-top: 1px solid var(--a-hairline); }
+.admin-row-list.is-loading{ opacity: 0.45; transition: opacity 0.15s ease; pointer-events: none; }
 .admin-row{
   display: flex;
   align-items: center;

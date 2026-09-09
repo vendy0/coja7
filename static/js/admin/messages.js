@@ -104,6 +104,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       tabs.forEach(function (t) { t.classList.remove("active"); });
       tab.classList.add("active");
+      list.classList.add("is-loading");
 
       fetch(url, { headers: { "X-Requested-With": "XMLHttpRequest" } })
         .then(function (res) { return res.json(); })
@@ -113,7 +114,10 @@ document.addEventListener("DOMContentLoaded", function () {
             history.pushState(null, "", url);
           }
         })
-        .catch(function () { /* on laisse l'affichage tel quel en cas d'échec */ });
+        .catch(function () { /* on laisse l'affichage tel quel en cas d'échec */ })
+        .finally(function () {
+          list.classList.remove("is-loading");
+        });
     });
   });
 });
