@@ -50,6 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const fd = new FormData();
       fd.append("file", file);
+      fd.append("csrf_token", window.getCsrfToken());
 
       const xhr = new XMLHttpRequest();
       xhr.open("POST", uploadUrl);

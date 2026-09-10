@@ -17,6 +17,7 @@
       </div>
       <div class="admin-row-actions">
         <form method="post" action="{{ url_for('admins.featured_delete', featured_id=item.id) }}" data-confirm="Retirer ce contenu de la une ?" data-ajax-delete>
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <button type="submit" class="admin-link admin-link-danger">Retirer</button>
         </form>
       </div>
@@ -29,6 +30,7 @@
 <div class="admin-panel">
   <h2>Ajouter à la une</h2>
   <form method="post" class="admin-form admin-form-inline" id="featured-form" action="{{ url_for('admins.featured') }}" data-ajax-toggle>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <div class="admin-field">
       <label for="content_type">Type de contenu</label>
       <select id="content_type" name="content_type">

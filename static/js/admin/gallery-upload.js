@@ -122,6 +122,7 @@
         fd.append("file", file);
         fd.append("type", mediaType);
         fd.append("credit", creditInput.value || "");
+        fd.append("csrf_token", window.getCsrfToken());
         if (thumbnailBlob) fd.append("thumbnail", thumbnailBlob, "thumb.jpg");
 
         const xhr = new XMLHttpRequest();

@@ -15,6 +15,7 @@ fonctionnent telles quelles (elles vérifient `auth.uid()`).
 """
 import os
 import time
+import secrets
 from functools import wraps
 
 from flask import session, redirect, url_for, request, flash, g
@@ -197,3 +198,28 @@ def super_admin_required(view):
             return redirect(url_for("admins.dashboard"))
         return view(*args, **kwargs)
     return wrapped
+
+
+# ---------------------------------------------------------------------------
+# Protection CSRF
+#
+# Pas de dépendance externe (Flask-WTF) : un jeton aléatoire par session,
+# vérifié sur chaque POST via le before_request du blueprint (voir
+# admins_routes.py). Exposé aux templates comme fonction Jinja csrf_token(),
+# et aux scripts JS via une balise <meta> dans base_admin.html — les appels
+# fetch() qui ne passent pas par FormData(form) (donc qui n'incluent pas le
+# champ caché automatiquement) doivent lire ce jeton et l'envoyer eux-mêmes
+# dans l'en-tête X-CSRF-Token.
+# ---------------------------------------------------------------------------
+
+def get_csrf_token():
+    if "csrf_token" not in session:
+        session["csrf_token"] = secrets.token_hex(32)
+    return session["csrf_token"]
+
+
+def verify_csrf_token(submitted):
+    expected = session.get("csrf_token")
+    if not expected or not submitted:
+        return False
+    return secrets.compare_digest(expected, submitted)

@@ -23,6 +23,7 @@
         <span class="admin-field-help">{{ admin.role }} — modifiable par un autre super-admin</span>
       {% else %}
         <form method="post" action="{{ url_for('admins.team_update_role', admin_id=admin.id) }}" class="admin-inline-form">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <select name="role" data-ajax-role>
             {% for role in ['editor', 'admin', 'super_admin'] %}
               <option value="{{ role }}" {{ 'selected' if role == admin.role }}>{{ role }}</option>
@@ -30,6 +31,7 @@
           </select>
         </form>
         <form method="post" action="{{ url_for('admins.team_toggle_active', admin_id=admin.id) }}" class="admin-inline-form" data-ajax-toggle-active data-confirm="{{ 'Désactiver' if admin.is_active else 'Réactiver' }} le compte de {{ admin.first_name }} {{ admin.last_name }} ?">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <button type="submit" class="admin-link {{ 'admin-link-danger' if admin.is_active else '' }}">
             {{ 'Désactiver' if admin.is_active else 'Réactiver' }}
           </button>

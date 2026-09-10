@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
         btn.disabled = true;
         btn.textContent = "…";
 
-        fetch(form.action, { method: "POST", headers: { "X-Requested-With": "XMLHttpRequest" } })
+        fetch(form.action, { method: "POST", headers: { "X-Requested-With": "XMLHttpRequest", "X-CSRF-Token": window.getCsrfToken() } })
           .then(function (res) { return res.json(); })
           .then(function (data) {
             if (data.ok) {
@@ -70,6 +70,7 @@ document.addEventListener("DOMContentLoaded", function () {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
           "X-Requested-With": "XMLHttpRequest",
+          "X-CSRF-Token": window.getCsrfToken(),
         },
         body: "role=" + encodeURIComponent(select.value),
       })

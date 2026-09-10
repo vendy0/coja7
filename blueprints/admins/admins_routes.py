@@ -1,12 +1,36 @@
 from datetime import datetime
+import time
 
 from flask import (
     Blueprint, render_template, request, redirect, url_for, flash, g, abort, jsonify, session
 )
 import re
-from .admins_auth import login_admin, logout_admin, login_required, super_admin_required
+from .admins_auth import (
+    login_admin, logout_admin, login_required, super_admin_required,
+    get_csrf_token, verify_csrf_token,
+)
 from .admins_config import CONTENT_TYPES, get_content_type
 from . import admins_db as db_ops
+
+# Limite de tentatives de connexion, en mémoire — suffisant pour un seul
+# processus (dev, ou un VPS avec un seul worker gunicorn dédié au login).
+# Avec plusieurs workers/processus en prod, chacun aurait son propre
+# compteur ; passer par un stockage partagé (Redis...) serait plus robuste
+# à ce moment-là, mais serait de la sur-ingénierie pour ce projet aujourd'hui.
+_login_attempts = {}
+LOGIN_MAX_ATTEMPTS = 5
+LOGIN_WINDOW_SECONDS = 300  # 5 minutes
+
+
+def _is_login_rate_limited(ip):
+    now = time.time()
+    attempts = [t for t in _login_attempts.get(ip, []) if now - t < LOGIN_WINDOW_SECONDS]
+    _login_attempts[ip] = attempts
+    return len(attempts) >= LOGIN_MAX_ATTEMPTS
+
+
+def _record_login_failure(ip):
+    _login_attempts.setdefault(ip, []).append(time.time())
 
 bp_admins = Blueprint(
     "admins",
@@ -15,6 +39,25 @@ bp_admins = Blueprint(
     template_folder="../../templates/admin",
     static_folder="../../static",
 )
+
+
+bp_admins.add_app_template_global(get_csrf_token, name="csrf_token")
+
+
+@bp_admins.before_request
+def _enforce_csrf():
+    """Vérifie le jeton CSRF sur chaque POST admin. Le login est exempté :
+    il n'y a pas encore de session/jeton avant la connexion elle-même, et
+    forcer une action de connexion n'est pas le scénario que CSRF protège
+    (l'attaquant utiliserait ses propres identifiants, pas ceux de la
+    victime)."""
+    if request.method != "POST" or request.endpoint == "admins.login":
+        return
+    token = request.form.get("csrf_token") or request.headers.get("X-CSRF-Token")
+    if not verify_csrf_token(token):
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return jsonify(ok=False, error="Session expirée — recharge la page."), 403
+        abort(403)
 
 
 @bp_admins.app_template_filter("admin_datetime_local")
@@ -36,10 +79,16 @@ def admin_datetime_local(value):
 @bp_admins.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
+        ip = request.remote_addr
+        if _is_login_rate_limited(ip):
+            flash("Trop de tentatives — réessaie dans quelques minutes.", "error")
+            return render_template("admin/login.html")
+
         email = request.form.get("email", "").strip()
         password = request.form.get("password", "")
         admin, error = login_admin(email, password)
         if error:
+            _record_login_failure(ip)
             flash(error, "error")
             return render_template("admin/login.html", email=email)
         return redirect(request.args.get("next") or url_for("admins.dashboard"))
