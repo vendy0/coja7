@@ -5,12 +5,14 @@ from flask import (
     Blueprint, render_template, request, redirect, url_for, flash, g, abort, jsonify, session
 )
 import re
+from . import admins_auth
 from .admins_auth import (
     login_admin, logout_admin, login_required, super_admin_required,
     get_csrf_token, verify_csrf_token,
 )
 from .admins_config import CONTENT_TYPES, get_content_type
 from . import admins_db as db_ops
+from . import admins_service
 
 # Limite de tentatives de connexion, en mémoire — suffisant pour un seul
 # processus (dev, ou un VPS avec un seul worker gunicorn dédié au login).
@@ -20,6 +22,9 @@ from . import admins_db as db_ops
 _login_attempts = {}
 LOGIN_MAX_ATTEMPTS = 5
 LOGIN_WINDOW_SECONDS = 300  # 5 minutes
+
+# Rows per page on admin list views (see content_list)
+PAGE_SIZE = 30
 
 
 def _is_login_rate_limited(ip):
@@ -189,21 +194,43 @@ def content_list(content_key):
     ct = get_content_type(content_key)
     if not ct:
         abort(404)
-    rows = db_ops.list_rows(g.db, ct["table"], order_by=ct.get("order_by"), order_desc=ct.get("order_desc", False))
 
     query = request.args.get("q", "").strip()
+    page = max(request.args.get("page", 1, type=int) or 1, 1)
+
     if query:
-        # Filtrage simple côté Python sur les colonnes déjà affichées dans
-        # la liste — pas touché à la requête Supabase elle-même, pour ne
-        # rien risquer sur ce qui marche déjà.
+        # Search filtering happens in Python (see below), so the Supabase
+        # query itself can't be paginated in this branch — we'd risk
+        # missing matches sitting on a page we didn't fetch. Instead: pull
+        # a large-enough batch, filter it, then paginate the filtered
+        # Python list. Fine at this project's scale; would need a real
+        # SQL-side filter (ilike/or_) if a table ever grew into the
+        # thousands of rows.
+        all_rows = db_ops.list_rows(
+            g.db, ct["table"], order_by=ct.get("order_by"), order_desc=ct.get("order_desc", False), limit=500
+        )
         q_lower = query.lower()
         searchable_fields = [name for name, _ in ct["list_columns"]]
-        rows = [
-            row for row in rows
+        matched = [
+            row for row in all_rows
             if any(q_lower in str(row.get(field) or "").lower() for field in searchable_fields)
         ]
+        total = len(matched)
+        start = (page - 1) * PAGE_SIZE
+        rows = matched[start:start + PAGE_SIZE]
+    else:
+        total = db_ops.count_rows(g.db, ct["table"])
+        offset = (page - 1) * PAGE_SIZE
+        rows = db_ops.list_rows(
+            g.db, ct["table"], order_by=ct.get("order_by"), order_desc=ct.get("order_desc", False),
+            limit=PAGE_SIZE, offset=offset,
+        )
 
-    return render_template("admin/list.html", ct=ct, rows=rows, query=query)
+    total_pages = max(1, (total + PAGE_SIZE - 1) // PAGE_SIZE)
+
+    return render_template(
+        "admin/list.html", ct=ct, rows=rows, query=query, page=page, total_pages=total_pages
+    )
 
 
 def _format_date_fr(iso_string):
@@ -681,6 +708,47 @@ def message_delete(message_id):
 # ---------------------------------------------------------------------------
 # Gestion des comptes admins (super_admin uniquement)
 # ---------------------------------------------------------------------------
+
+@bp_admins.route("/team/invite", methods=["POST"])
+@super_admin_required
+def team_invite():
+    # Kept as a plain form submit (not AJAX) on purpose: this is a rare,
+    # sensitive action — a full page reload with a clear flash message is
+    # more trustworthy here than a slick inline update.
+    email = (request.form.get("email") or "").strip()
+    first_name = (request.form.get("first_name") or "").strip()
+    last_name = (request.form.get("last_name") or "").strip()
+    role = request.form.get("role") or "editor"
+    if role not in ("super_admin", "admin", "editor"):
+        role = "editor"
+
+    if not email or not first_name or not last_name:
+        flash("Email, prénom et nom sont obligatoires.", "error")
+        return redirect(url_for("admins.team"))
+
+    try:
+        redirect_url = url_for("admins.set_password", _external=True)
+        admins_service.invite_admin(email, first_name, last_name, role, redirect_to=redirect_url)
+        flash(f"Invitation envoyée à {email}.", "success")
+    except Exception as e:
+        flash(f"Erreur lors de l'invitation : {e}", "error")
+    return redirect(url_for("admins.team"))
+
+
+@bp_admins.route("/set-password")
+def set_password():
+    """Landing page for the invite email's link. No @login_required: the
+    person isn't logged in yet at this point — Supabase hands them a
+    short-lived session token instead, delivered in the URL fragment
+    (after the #), which the server never sees (fragments aren't sent in
+    HTTP requests at all). set-password.js reads it client-side and calls
+    Supabase's REST API directly to set the password."""
+    return render_template(
+        "admin/set_password.html",
+        supabase_url=admins_auth.SUPABASE_URL,
+        supabase_anon_key=admins_auth.SUPABASE_ANON_KEY,
+    )
+
 
 @bp_admins.route("/team")
 @super_admin_required

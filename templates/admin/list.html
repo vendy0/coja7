@@ -42,4 +42,16 @@
   <p class="admin-empty">Aucun contenu pour l'instant.</p>
   {% endfor %}
 </div>
+
+{% if total_pages > 1 %}
+<div class="admin-pagination">
+  {% if page > 1 %}
+    <a href="{{ url_for('admins.content_list', content_key=ct.key, page=page-1, q=query) }}">← Précédent</a>
+  {% endif %}
+  <span>Page {{ page }} / {{ total_pages }}</span>
+  {% if page < total_pages %}
+    <a href="{{ url_for('admins.content_list', content_key=ct.key, page=page+1, q=query) }}">Suivant →</a>
+  {% endif %}
+</div>
+{% endif %}
 {% endblock %}

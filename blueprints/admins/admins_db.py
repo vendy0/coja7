@@ -348,11 +348,16 @@ def delete_audio_by_url(db, url):
 # CRUD générique
 # ---------------------------------------------------------------------------
 
-def list_rows(db, table, order_by=None, order_desc=False, limit=100):
+def list_rows(db, table, order_by=None, order_desc=False, limit=100, offset=0):
     query = db.table(table).select("*")
     if order_by:
         query = query.order(order_by, desc=order_desc)
-    return query.limit(limit).execute().data or []
+    return query.range(offset, offset + limit - 1).execute().data or []
+
+
+def count_rows(db, table):
+    """Total row count for a table — used to compute the number of pages."""
+    return db.table(table).select("id", count="exact").execute().count or 0
 
 
 def get_row(db, table, row_id):

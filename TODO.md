@@ -3,11 +3,10 @@
 19. Commenter tout
 
 Admin
-33. Mettre un indicateur de chargement en changeant de filtre sur les messages
 34. Pagination sur les listes admin (actuellement limité à 100 lignes)
 34. Réordonnancement drag & drop des médias d'une galerie
 35. Invitation d'un nouvel admin directement depuis l'interface (nécessite la clé service_role, à manier avec précaution)
-
+36. Mettre à jour le README
 
 Maths
 1. Passe aux exp, log, ln
