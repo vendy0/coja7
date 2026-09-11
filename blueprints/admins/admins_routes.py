@@ -48,7 +48,20 @@ bp_admins = Blueprint(
 
 bp_admins.add_app_template_global(get_csrf_token, name="csrf_token")
 
+ROLES = {
+    "editor": "Éditeur",
+    "admin": "Administrateur"
+}
+ROLE_EXTENDED = {
+    "editor": "Éditeur",
+    "admin": "Administrateur",
+    "super_admin": "Super Administrateur"
+}
 
+@bp_admins.app_context_processor
+def inject_roles():
+    return {"roles": ROLES}
+    
 @bp_admins.before_request
 def _enforce_csrf():
     """Vérifie le jeton CSRF sur chaque POST admin. Le login est exempté :
@@ -621,7 +634,7 @@ def featured():
 
     try:
         current = (
-            g.db.table("featured_content").select("*").order("display_order").execute().data or []
+            g.db.table("featured_content").select("*").order("display_order", desc=True).execute().data or []
         )
     except Exception as e:
         flash(f"Erreur de chargement : {e}", "error")
@@ -737,13 +750,14 @@ def team_invite():
     email = (request.form.get("email") or "").strip()
     first_name = (request.form.get("first_name") or "").strip()
     last_name = (request.form.get("last_name") or "").strip()
-    role = request.form.get("role") or "editor"
-    if role not in ("super_admin", "admin", "editor"):
-        role = "editor"
-
+    role = request.form.get("role") or ""
+    if not role or role not in ROLES:
+        flash("Choisissez le rôle", "error")
+        return redirect(request.referrer)
+        
     if not email or not first_name or not last_name:
         flash("Email, prénom et nom sont obligatoires.", "error")
-        return redirect(url_for("admins.team"))
+        return redirect(request.referrer)
 
     try:
         redirect_url = url_for("admins.set_password", _external=True)
@@ -820,7 +834,7 @@ def team_update_role(admin_id):
         return redirect(url_for("admins.team"))
 
     role = request.form.get("role")
-    if role not in ("super_admin", "admin", "editor"):
+    if role not in ROLE_EXTENDED:
         if is_ajax:
             return jsonify(ok=False, error="Rôle invalide."), 400
         return redirect(url_for("admins.team"))

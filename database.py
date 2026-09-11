@@ -70,7 +70,7 @@ def get_featured_content() -> tuple[dict | None, dict | None]:
     featured_rows = (
         supabase.table("featured_content")
         .select("*")
-        .order("display_order")
+        .order("display_order", desc=True)
         .limit(2)
         .execute()
         .data

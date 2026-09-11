@@ -4,7 +4,7 @@ import os
 
 # Adresse et port — PORT vient de l'environnement si l'hébergeur en impose
 # un (Render, Railway...), avec 8000 comme repli en local/VPS.
-bind = f"0.0.0.0:{os.environ.get('PORT', '8000')}"
+bind = f"0.0.0.0:{os.environ.get('SERVER_PORT', '8000')}"
 
 # Formule standard : (2 x nombre de coeurs CPU) + 1.
 # À revoir à la baisse si le VPS choisi a peu de RAM — chaque worker sync

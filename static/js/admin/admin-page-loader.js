@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function () {
       // transition lui-même juste avant l'envoi réel. Les formulaires
       // marqués data-ajax-toggle gèrent aussi tout eux-mêmes (aucune
       // navigation réelle n'a lieu, donc l'écran ne disparaîtrait jamais).
-      if (!form.dataset.confirm && !form.dataset.ajaxToggle) show();
+      if (!form.dataset.confirm && !("ajaxToggle" in form.dataset)) show();
     });
   });
 

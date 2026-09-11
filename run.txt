@@ -12,7 +12,7 @@ if __name__ == "__main__":
         "routes:app",
     ]
 
-    port = os.environ.get("PORT", "8000")
+    port = os.environ.get("SERVER_PORT", "8000")
     print(f"🚀 Démarrage de COJA7 avec Gunicorn sur le port {port}...")
 
     try:

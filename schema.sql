@@ -1,5 +1,7 @@
 -- WARNING: This schema is for context only and is not meant to be run.
 -- Table order and constraints may not be valid for execution.
+-- WARNING: This schema is for context only and is not meant to be run.
+-- Table order and constraints may not be valid for execution.
 
 CREATE TABLE public.admins (
   id uuid NOT NULL,
@@ -65,7 +67,7 @@ CREATE TABLE public.sermons (
   title character varying NOT NULL,
   subtitle character varying,
   reference character varying,
-  content text,
+  content text NOT NULL,
   author character varying,
   hero_media_type character varying CHECK (hero_media_type::text = ANY (ARRAY['image'::character varying, 'video'::character varying]::text[])),
   hero_media_url text,
@@ -108,6 +110,14 @@ CREATE TABLE public.featured_content (
   display_order integer DEFAULT 0,
   created_at timestamp with time zone DEFAULT now(),
   CONSTRAINT featured_content_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.support_messages (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  message text NOT NULL,
+  is_resolved boolean DEFAULT false,
+  created_at timestamp with time zone DEFAULT now(),
+  contact text,
+  CONSTRAINT support_messages_pkey PRIMARY KEY (id)
 );
 
 -- ==========================================
