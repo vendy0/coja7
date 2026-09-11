@@ -537,6 +537,25 @@ def gallery_media_upload(gallery_id):
     return jsonify(ok=True, item=row)
 
 
+@bp_admins.route("/galleries/<gallery_id>/media/reorder", methods=["POST"])
+@login_required
+def gallery_media_reorder(gallery_id):
+    data = request.get_json(silent=True) or {}
+    order = data.get("order") or []
+    if not order:
+        return jsonify(ok=False, error="Ordre vide."), 400
+
+    try:
+        # One UPDATE per item — fine at this project's gallery sizes, but
+        # would be worth batching (a single RPC call) if a gallery ever
+        # grew into the hundreds of media items.
+        for index, media_id in enumerate(order):
+            g.db.table("media_items").update({"display_order": index}).eq("id", media_id).eq("gallery_id", gallery_id).execute()
+        return jsonify(ok=True)
+    except Exception as e:
+        return jsonify(ok=False, error=str(e)), 502
+
+
 @bp_admins.route("/galleries/<gallery_id>/media/<media_id>/delete", methods=["POST"])
 @login_required
 def gallery_media_delete(gallery_id, media_id):

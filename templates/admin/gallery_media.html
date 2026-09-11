@@ -30,9 +30,10 @@
   <div id="gallery-upload-queue" class="admin-upload-queue"></div>
 </div>
 
-<div class="admin-media-grid" id="gallery-media-grid" data-empty-text="Aucun média dans cette galerie pour l'instant.">
+<div class="admin-media-grid" id="gallery-media-grid" data-empty-text="Aucun média dans cette galerie pour l'instant."
+     data-reorder-url="{{ url_for('admins.gallery_media_reorder', gallery_id=gallery.id) }}">
   {% for item in media_items %}
-  <div class="admin-media-tile" data-ajax-row>
+  <div class="admin-media-tile" data-ajax-row data-media-id="{{ item.id }}">
     {% if item.type == 'video' %}
       <video src="{{ item.media_url }}" controls poster="{{ item.thumbnails_url or '' }}"></video>
     {% else %}
@@ -52,5 +53,7 @@
 </div>
 {% endblock %}
 {% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 <script src="{{ url_for('static', filename='js/admin/gallery-upload.js') }}"></script>
+<script src="{{ url_for('static', filename='js/admin/gallery-reorder.js') }}"></script>
 {% endblock %}

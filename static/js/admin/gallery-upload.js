@@ -203,6 +203,7 @@
       const tile = document.createElement("div");
       tile.className = "admin-media-tile";
       tile.setAttribute("data-ajax-row", "");
+      tile.setAttribute("data-media-id", item.id);
       const mediaHtml = item.type === "video"
         ? '<video src="' + item.media_url + '" controls poster="' + (item.thumbnails_url || "") + '"></video>'
         : '<img src="' + (item.thumbnails_url || item.media_url) + '" alt="">';

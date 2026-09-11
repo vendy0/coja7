@@ -1,11 +1,9 @@
 11. Apprendre le MarkDown
 17. Télécharger une image et une gallery. C'est déjà là mais faut configurer le truc cors ou jsp quoi parce que je n'ai pas encore acheté le domaine
-19. Commenter tout
+19. Tu n'a commenté aucune des fichiers qu'il m'a envoyé
 
 Admin
-34. Pagination sur les listes admin (actuellement limité à 100 lignes)
-34. Réordonnancement drag & drop des médias d'une galerie
-35. Invitation d'un nouvel admin directement depuis l'interface (nécessite la clé service_role, à manier avec précaution)
+37. Mettre un indicateur d'état lorsque l'internet coupe par exemple pour le drag & drop. En passant c'est hyper bien fait. J'aimerais pas qu'un indicateur d'état vienne gacher ce beau ui/ux.
 36. Mettre à jour le README
 
 Maths
