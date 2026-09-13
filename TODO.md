@@ -15,6 +15,7 @@ Admin
 40. Modifier nom ou prénom dans team
 41. Passer team en Ajax (avec indicateur d'état)
 42. Styliser la séléction de rôle (input pour changer de rôle) dans team
+43. Gérer le mdp oublié dans le style d'InterPam
 
 Maths
 1. Passe aux exp, log, ln
