@@ -43,11 +43,10 @@
   
   {% elif hero.type == 'rubric' %}
     <div class="eyebrow"><span class="dot"></span>Rubrique · {{ item.category or "" }}</div>
-    <a class="frame" href="{{ url_for('emissions.rubrics') }}">
-      <div class="play"><svg viewBox="0 0 12 12" fill="#FFFFFF"><polygon points="0,0 12,6 0,12"/></svg></div>
-    </a>
     <h1>{{ item.title }}</h1>
-    <p>{{ item.speaker or "" }}</p>
+    <p>{{ item.description }}</p>
+    <a href="{{ url_for('emissions.rubrics') }}" style="font-size: 13px; margin-top:2em">Regarder la rubrique &#8594</a>
+    <p style="text-align:end; margin-top: 10px"><strong>{{ item.speaker or "" }}</strong></p>
   
   {% elif hero.type == 'communication' %}
     <div class="eyebrow"><span class="dot"></span>Communiqué · {{ item.department or "" }}</div>
